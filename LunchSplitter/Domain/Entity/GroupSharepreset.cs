@@ -10,4 +10,9 @@ public class GroupSharepreset
     [Column("id")]
     public int id { get; set; }
     
+    [Column("group_id")]
+    public int GroupId { get; set; }
+    
+    [ForeignKey("GroupId")]
+    public Group Group { get; set; }
 }

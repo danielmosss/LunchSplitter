@@ -1,4 +1,5 @@
-﻿using LunchSplitter.Domain.Entity;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using LunchSplitter.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace a;
@@ -10,8 +11,10 @@ public class TransactionShare
     
     public int UserId { get; set; }
     
+    public string UserName { get; set; }
+    
     public decimal Amount { get; set; }
     
-    public User User { get; set; }
+    [ForeignKey("TransactionId")]
     public Transaction Transaction { get; set; }
 }

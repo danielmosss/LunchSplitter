@@ -16,7 +16,12 @@ public class GroupUserPermissions
     [Column("permission_id")]
     public int PermissionId { get; set; }
     
+    [ForeignKey("GroupId")]
     public Group Group { get; set; }
+    
+    [ForeignKey("PermissionId")]
     public Permission Permission { get; set; }
+    
+    [ForeignKey("UserId")]
     public User User { get; set; }
 }
