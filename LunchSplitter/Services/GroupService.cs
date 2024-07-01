@@ -19,12 +19,12 @@ public class GroupService
         return context.Groups.ToList();
     }
 
-    public void AddGroup(Group group)
+    public async void AddGroup(Group group)
     {
         using (var context = _dbContextFactory.CreateDbContext())
         {
             context.Groups.Add(group);
-            context.SaveChanges();
+            await context.SaveChangesAsync();
         }
     }
 }

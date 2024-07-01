@@ -9,7 +9,7 @@
 
 Welcome to your new app.
 
-<EditForm Model=@newGroup OnValidSubmit="HandleSubmit" FormName="CreateGroup">
+<EditForm Model="newGroup" OnSubmit="HandleSubmit" FormName="CreateGroup">
     <DataAnnotationsValidator />
 
     <div>
@@ -23,7 +23,10 @@ Welcome to your new app.
 
 @code
 {
-    private Group newGroup = new Group();
+    [SupplyParameterFromForm]
+    public Group newGroup { get; set; }
+
+    protected override void OnInitialized() => newGroup ??= new();
 
     private void HandleSubmit()
     {

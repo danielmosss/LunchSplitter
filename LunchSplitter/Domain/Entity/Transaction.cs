@@ -11,7 +11,7 @@ public class Transaction
     public int Id { get; set; }
     
     [Column("group_id")]
-    public Guid GroupId { get; set; }
+    public int GroupId { get; set; }
     
     [Column("user_id")]
     public int UserId { get; set; }

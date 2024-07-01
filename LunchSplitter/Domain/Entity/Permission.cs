@@ -3,19 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LunchSplitter.Domain.Entity;
 
-public class Group
+public class Permission
 {
+    //auto increment int id
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("id")]
     public int Id { get; set; }
     
-    [Column("name")]
-    [Required]
-    [MaxLength(100)]
-    public string Name { get; set; }
+    [Column("term")]
+    public string Term { get; set; }
     
-    public List<Transaction> Transactions { get; set; }
-    
-    public List<GroupUser> GroupUsers { get; set; }
+    [Column("description")]
+    public string Description { get; set; }
 }

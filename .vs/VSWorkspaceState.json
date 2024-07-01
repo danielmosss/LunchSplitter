@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\LunchSplitter",
+    "\\LunchSplitter\\Data",
+    "\\LunchSplitter\\Migrations"
   ],
-  "SelectedNode": "\\LunchSplitter.sln",
   "PreviewInSolutionExplorer": false
 }

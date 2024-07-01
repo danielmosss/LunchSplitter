@@ -139,7 +139,7 @@ namespace LunchSplitter.Migrations
                             Id = 1,
                             Email = "admin@example.com",
                             Name = "SystemAdmin",
-                            Password = "L9QreV+LSPGVDQxZReP8se1YcmwgZ86TbeS8q3RsfAo="
+                            Password = "BY35QnDABC/38Mi2BsRI+BcVJL2xttU4xUmh644Beh4="
                         });
                 });
 
