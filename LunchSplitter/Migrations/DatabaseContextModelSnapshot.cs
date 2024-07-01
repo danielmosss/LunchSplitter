@@ -196,6 +196,11 @@ namespace LunchSplitter.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("password");
 
+                    b.Property<string>("Salt")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("salt");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
@@ -206,7 +211,8 @@ namespace LunchSplitter.Migrations
                             Id = 1,
                             Email = "admin@example.com",
                             Name = "SystemAdmin",
-                            Password = "WDroAh1x2PH1u90OdXx5JqcaXOrFLFlV+Mx8hYKx0Qo="
+                            Password = "hEc+vYla/jePZ7CuHGuiRoMmgkHb1F9UYjjYHrQzp5o=",
+                            Salt = "System.Byte[]"
                         });
                 });
 

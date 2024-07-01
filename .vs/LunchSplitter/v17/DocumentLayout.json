@@ -3,8 +3,12 @@
   "WorkspaceRootPath": "C:\\Users\\danie\\RiderProjects\\LunchSplitter\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\danie\\RiderProjects\\LunchSplitter\\LunchSplitter\\Migrations\\20240701182729_Database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:LunchSplitter\\Migrations\\20240701182729_Database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B4249861-8932-47ED-9666-8024233F3B00}|LunchSplitter\\LunchSplitter.csproj|c:\\users\\danie\\riderprojects\\lunchsplitter\\lunchsplitter\\domain\\entity\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4249861-8932-47ED-9666-8024233F3B00}|LunchSplitter\\LunchSplitter.csproj|solutionrelative:lunchsplitter\\domain\\entity\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{B4249861-8932-47ED-9666-8024233F3B00}|LunchSplitter\\LunchSplitter.csproj|c:\\users\\danie\\riderprojects\\lunchsplitter\\lunchsplitter\\migrations\\20240701182729_database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B4249861-8932-47ED-9666-8024233F3B00}|LunchSplitter\\LunchSplitter.csproj|solutionrelative:lunchsplitter\\migrations\\20240701182729_database.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{B4249861-8932-47ED-9666-8024233F3B00}|LunchSplitter\\LunchSplitter.csproj|C:\\Users\\danie\\RiderProjects\\LunchSplitter\\lunchsplitter\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -15,7 +19,7 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:LunchSplitter\\Migrations\\20240701182209_DatabaseUpdate3.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B4249861-8932-47ED-9666-8024233F3B00}|LunchSplitter\\LunchSplitter.csproj|c:\\users\\danie\\riderprojects\\lunchsplitter\\lunchsplitter\\data\\databasecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B4249861-8932-47ED-9666-8024233F3B00}|LunchSplitter\\LunchSplitter.csproj|C:\\Users\\danie\\RiderProjects\\LunchSplitter\\lunchsplitter\\data\\databasecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B4249861-8932-47ED-9666-8024233F3B00}|LunchSplitter\\LunchSplitter.csproj|solutionrelative:lunchsplitter\\data\\databasecontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -39,6 +43,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\danie\\RiderProjects\\LunchSplitter\\LunchSplitter\\Domain\\Entity\\User.cs",
+              "RelativeDocumentMoniker": "LunchSplitter\\Domain\\Entity\\User.cs",
+              "ToolTip": "C:\\Users\\danie\\RiderProjects\\LunchSplitter\\LunchSplitter\\Domain\\Entity\\User.cs",
+              "RelativeToolTip": "LunchSplitter\\Domain\\Entity\\User.cs",
+              "ViewState": "AQIAAAUAAAAAAAAAAAAxwBYAAAAkAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-07-01T19:19:57.592Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "20240701182729_Database.cs",
               "DocumentMoniker": "C:\\Users\\danie\\RiderProjects\\LunchSplitter\\LunchSplitter\\Migrations\\20240701182729_Database.cs",
               "RelativeDocumentMoniker": "LunchSplitter\\Migrations\\20240701182729_Database.cs",
@@ -51,7 +68,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "20240701182209_DatabaseUpdate3.cs",
               "DocumentMoniker": "C:\\Users\\danie\\RiderProjects\\LunchSplitter\\LunchSplitter\\Migrations\\20240701182209_DatabaseUpdate3.cs",
               "RelativeDocumentMoniker": "LunchSplitter\\Migrations\\20240701182209_DatabaseUpdate3.cs",
@@ -59,12 +76,11 @@
               "RelativeToolTip": "LunchSplitter\\Migrations\\20240701182209_DatabaseUpdate3.cs",
               "ViewState": "AQIAAAMAAAAAAAAAAAAAAAAAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-01T18:22:09.914Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-07-01T18:22:09.914Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "DatabaseContext.cs",
               "DocumentMoniker": "C:\\Users\\danie\\RiderProjects\\LunchSplitter\\LunchSplitter\\Data\\DatabaseContext.cs",
               "RelativeDocumentMoniker": "LunchSplitter\\Data\\DatabaseContext.cs",
@@ -72,12 +88,11 @@
               "RelativeToolTip": "LunchSplitter\\Data\\DatabaseContext.cs",
               "ViewState": "AQIAAAAAAAAAAAAAAAAAAB8AAAAIAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-29T18:39:36.829Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-29T18:39:36.829Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\danie\\RiderProjects\\LunchSplitter\\LunchSplitter\\Program.cs",
               "RelativeDocumentMoniker": "LunchSplitter\\Program.cs",
@@ -85,12 +100,11 @@
               "RelativeToolTip": "LunchSplitter\\Program.cs",
               "ViewState": "AQIAAAMAAAAAAAAAAAAAABEAAAA0AAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-06-29T18:38:30.755Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-06-29T18:38:30.755Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "GroupService.cs",
               "DocumentMoniker": "C:\\Users\\danie\\RiderProjects\\LunchSplitter\\LunchSplitter\\Services\\GroupService.cs",
               "RelativeDocumentMoniker": "LunchSplitter\\Services\\GroupService.cs",
@@ -102,7 +116,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "Home.razor",
               "DocumentMoniker": "C:\\Users\\danie\\RiderProjects\\LunchSplitter\\LunchSplitter\\Components\\Pages\\Home.razor",
               "RelativeDocumentMoniker": "LunchSplitter\\Components\\Pages\\Home.razor",

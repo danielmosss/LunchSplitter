@@ -5,21 +5,32 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+@* list of all groups this user is in*@
+<div>
+    <h2>Groups</h2>
+    @foreach (var group in groupService.GetGroups())
+    {
+        <div>
+            <h3>@group.Name</h3>
+            <p>@group.GroupUsers.Count users</p>
+        </div>
+    }
+</div>
 
-Welcome to your new app.
+<div style="border: #000000">
+    <h2>Create a new group</h2>
+    <EditForm Model="newGroup" OnSubmit="HandleSubmit" FormName="CreateGroup">
+        <DataAnnotationsValidator />
 
-<EditForm Model="newGroup" OnSubmit="HandleSubmit" FormName="CreateGroup">
-    <DataAnnotationsValidator />
-
-    <div>
-        <label for="NameInput">Name</label>
-        <InputText id="NameInput" @bind-Value="newGroup.Name" />
-        <ValidationMessage For="@(() => newGroup.Name)" />
-    </div>
-
-    <button type="submit">Submit</button>
-</EditForm>
+        <div>
+            <label for="NameInput">Name</label>
+            <InputText id="NameInput" @bind-Value="newGroup.Name" />
+            <ValidationMessage For="@(() => newGroup.Name)" />
+        </div>
+    
+        <button type="submit">Submit</button>
+    </EditForm>
+</div>
 
 @code
 {

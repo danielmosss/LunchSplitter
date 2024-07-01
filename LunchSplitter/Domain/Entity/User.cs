@@ -19,6 +19,9 @@ public class User
     [Column("password")]
     public string Password { get; set; }
     
+    [Column("salt")]
+    public string Salt { get; set; }
+    
     public List<GroupUser> GroupUsers { get; set; }
     public List<Transaction> Transactions { get; set; }
 }

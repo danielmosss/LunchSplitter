@@ -2,6 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\LunchSplitter",
+    "\\LunchSplitter\\Components",
+    "\\LunchSplitter\\Components\\Pages",
+    "\\LunchSplitter\\Components\\Pages\\Account",
     "\\LunchSplitter\\Data",
     "\\LunchSplitter\\Migrations"
   ],

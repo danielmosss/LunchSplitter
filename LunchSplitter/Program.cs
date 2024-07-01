@@ -14,17 +14,15 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.Cookie.Name = "auth_token";
         options.LoginPath = "/login";
-        options.Cookie.MaxAge = TimeSpan.FromDays(30);
-        options.AccessDeniedPath = "/access-denied";
+        options.Cookie.MaxAge = TimeSpan.FromDays(28);
+        options.AccessDeniedPath = "/forbidden";
     });
 builder.Services.AddAuthentication();
 builder.Services.AddCascadingAuthenticationState();
-// builder.Services.AddDbContext<DatabaseContext>(options =>
-// {
-//     var connectionString = builder.Configuration.GetConnectionString("DbConnection");
-//     options.UseSqlServer(connectionString);
-// });
+builder.Services.AddAuthorizationCore();
+
 builder.Services.AddTransient<GroupService>();
+builder.Services.AddTransient<UserService>();
 builder.Services.AddDbContextFactory<DatabaseContext>(optionsBuilder =>
 {
     optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DbConnection"));

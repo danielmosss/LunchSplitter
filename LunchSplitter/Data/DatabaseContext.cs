@@ -1,8 +1,10 @@
 ﻿using System.Security.Cryptography;
 using a;
 using LunchSplitter.Domain.Entity;
+using LunchSplitter.Services;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.EntityFrameworkCore;
+
 
 namespace LunchSplitter.Data;
 
@@ -29,8 +31,8 @@ public class DatabaseContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
-        var adminPassword = HashPassword("Admin@1234");
+
+        var hash = UserService.HashPassword("Admin@1234");
 
         modelBuilder.Entity<User>().HasData(
             new User
@@ -38,25 +40,8 @@ public class DatabaseContext : DbContext
                 Id = 1,
                 Name = "SystemAdmin",
                 Email = "admin@example.com",
-                Password = adminPassword // Use a hashed password in a real application
+                Password = hash.hashed,
+                Salt = hash.salt.ToString()
             });
-    }
-    
-    private string HashPassword(string password)
-    {
-        byte[] salt = new byte[128 / 8];
-        using (var rng = RandomNumberGenerator.Create())
-        {
-            rng.GetBytes(salt);
-        }
-
-        string hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
-            password: password,
-            salt: salt,
-            prf: KeyDerivationPrf.HMACSHA1,
-            iterationCount: 10000,
-            numBytesRequested: 256 / 8));
-
-        return hashed;
     }
 }
