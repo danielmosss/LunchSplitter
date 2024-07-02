@@ -24,6 +24,8 @@ public class DatabaseContext : DbContext
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<TransactionShare> TransactionShares { get; set; }
     
+    public DbSet<GroupInvite> GroupInvites { get; set; }
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

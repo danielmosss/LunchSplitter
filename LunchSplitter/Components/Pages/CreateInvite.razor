@@ -1,0 +1,65 @@
+﻿@using LunchSplitter.Domain.Entity
+@using LunchSplitter.Services
+@inject GroupService groupService
+@inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
+<div>
+    <h3>CreateInvite</h3>
+    <table>
+        <tr>
+            <th>InviteId</th>
+            <th>Usages</th>
+            <th>Group</th>
+        </tr>
+        @foreach (var invite in getInvites())
+        {
+            <tr>
+                <td>
+                    @GetInviteLink(@invite.Id)
+                </td>
+                <td>@invite.usage</td>
+                <td>@invite.GroupId</td>
+            </tr>
+        }
+    </table>
+    
+    <h5>Create new invite</h5>
+    <EditForm Model="@newInvite" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator/>
+    <div class="form-group">
+        <label for="Usages">Usages</label>
+        <InputNumber id="Usages" class="form-control" @bind-Value="newInvite.usage" />
+        <ValidationMessage For="@(() => newInvite.usage)" />
+    </div>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create Invite</button>
+    </div>
+</EditForm>
+
+</div>
+@code {
+    [Parameter]
+    public int GroupId { get; set; }
+    
+    public GroupInvite newInvite { get; set; } = new GroupInvite();
+    
+    private void HandleValidSubmit()
+    {
+        newInvite.GroupId = GroupId;
+        newInvite.usage = 0;
+        groupService.CreateInvite(newInvite);
+    }
+    
+    private List<GroupInvite> getInvites()
+    {
+        return groupService.GetInvites(GroupId);
+    }
+    
+    public string GetInviteLink(Guid inviteId)
+    {
+        var host = navigationManager.BaseUri;
+        var inviteLink = host + "invite/" + inviteId;
+        return inviteLink;
+    }
+}

@@ -1,4 +1,6 @@
 ﻿using a;
+using Azure.Core;
+using LunchSplitter.Components.Pages;
 using LunchSplitter.Data;
 using LunchSplitter.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
@@ -52,7 +54,7 @@ public class GroupService
             AddUserToGroup(group, userId, true);
         }
     }
-
+    
     public async void AddUserToGroup(Group group, int userId, bool isAdmin = false)
     {
         using (var context = _dbContextFactory.CreateDbContext())
@@ -63,11 +65,18 @@ public class GroupService
             {
                 dbGroup.GroupUsers = new List<GroupUser>();
             }
+            
+            if (UserAlreadyInGroup(dbGroup.Id, userId))
+            {
+                Console.WriteLine("User already in group");
+                return;
+            }
 
             GroupUser groupUser = new GroupUser
             {
                 Group = dbGroup,
-                User = user
+                User = user,
+                Share = 1
             };
             if (isAdmin)
             {
@@ -75,6 +84,103 @@ public class GroupService
             }
             dbGroup.GroupUsers.Add(groupUser);
             await context.SaveChangesAsync();
+        }
+    }
+    
+    private bool UserAlreadyInGroup(int groupId, int userId)
+    {
+        Group group = GetGroupById(groupId);
+        return group.GroupUsers.Any(gu => gu.UserId == userId);
+    }
+    
+    public class UserTotalAmount
+    {
+        public GroupUser GroupUser { get; set; }
+        public int TransactionsPaid { get; set; }
+        public decimal TotalPaid { get; set; }
+        public int TransactionsSpent { get; set; }
+        public decimal TotalSpent { get; set; }
+    }
+
+    public List<UserTotalAmount> GetUserTotalAmounts(int groupId)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            List<GroupUser> groupUsers = context.GroupUsers
+                .Include(gu => gu.User)
+                .Where(gu => gu.GroupId == groupId)
+                .ToList();
+            List<TransactionShare> transactionShares = context.TransactionShares
+                .Where(ts => ts.Transaction.GroupId == groupId)
+                .ToList();
+            List<Transaction> transactions = context.Transactions
+                .Where(t => t.GroupId == groupId)
+                .ToList();
+
+            var userTotalAmounts = new List<UserTotalAmount>();
+            foreach (var groupUser in groupUsers)
+            {
+                var totalPaid = transactions.Where(t => t.UserId == groupUser.UserId);
+                var totalSpent = transactionShares.Where(ts => ts.UserId == groupUser.UserId);
+                userTotalAmounts.Add(new UserTotalAmount
+                {
+                    GroupUser = groupUser,
+                    TransactionsPaid = totalPaid.Count(),
+                    TotalPaid = totalPaid.Sum(t => t.Amount),
+                    TransactionsSpent = totalSpent.Count(),
+                    TotalSpent = totalSpent.Sum(ts => ts.Amount)
+                });
+            }
+
+            return userTotalAmounts;
+        }
+    }
+
+    public void CreateInvite(GroupInvite invite)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            context.GroupInvites.Add(invite);
+            context.SaveChanges();
+        }
+    }
+    
+    public List<GroupInvite> GetInvites(int groupId)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            return context.GroupInvites
+                .Where(gi => gi.GroupId == groupId)
+                .ToList();
+        }
+    }
+
+    public GroupInvite GetInvite(Guid inviteId)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            return context.GroupInvites.Find(inviteId);
+        }
+    }
+    
+    public void UseInvite(Guid inviteId, int userId)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            GroupInvite invite = context.GroupInvites.Find(inviteId);
+            if (invite == null || invite.usage < 1)
+            {
+                return;
+            }
+            else if (invite.usage == 1)
+            {
+                context.GroupInvites.Remove(invite);
+            }
+            
+            var group = context.Groups.Find(invite.GroupId);
+            AddUserToGroup(group, userId);
+            
+            context.SaveChanges();
         }
     }
 }

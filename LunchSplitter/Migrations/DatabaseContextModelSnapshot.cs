@@ -42,6 +42,28 @@ namespace LunchSplitter.Migrations
                     b.ToTable("Groups");
                 });
 
+            modelBuilder.Entity("LunchSplitter.Domain.Entity.GroupInvite", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int")
+                        .HasColumnName("group_id");
+
+                    b.Property<int>("usage")
+                        .HasColumnType("int")
+                        .HasColumnName("usage");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("GroupInvites");
+                });
+
             modelBuilder.Entity("LunchSplitter.Domain.Entity.GroupUser", b =>
                 {
                     b.Property<int>("GroupUserId")
@@ -119,7 +141,8 @@ namespace LunchSplitter.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
                         .HasColumnName("description");
 
                     b.Property<int>("GroupId")
@@ -178,7 +201,7 @@ namespace LunchSplitter.Migrations
                             Id = 1,
                             Email = "admin@example.com",
                             Name = "SystemAdmin",
-                            Password = "ubtS+zXrctrERRjaDDab7C12D1yArT32qvHGNsi82V4=",
+                            Password = "SIPfRehvBfgioPdR3v6cvP0YUs1dBvaht6G4V9U2/XM=",
                             Salt = "System.Byte[]"
                         });
                 });
@@ -237,6 +260,17 @@ namespace LunchSplitter.Migrations
                     b.HasIndex("TransactionId");
 
                     b.ToTable("TransactionShares");
+                });
+
+            modelBuilder.Entity("LunchSplitter.Domain.Entity.GroupInvite", b =>
+                {
+                    b.HasOne("LunchSplitter.Domain.Entity.Group", "Group")
+                        .WithMany()
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("LunchSplitter.Domain.Entity.GroupUser", b =>

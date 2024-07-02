@@ -13,17 +13,20 @@
 
 <PageTitle>Group</PageTitle>
 
-<h3>Group, @group.Name</h3>
 
-@if(IsGroupAdmin)
-{
-    <div class="groupActions">
-        <button class="btn btn-primary" @onclick="() => DeleteGroup()">
-            <span class="bi bi-trash"></span>
-            Delete Group
-        </button>
-    </div>
-}
+<div style="display: flex">
+    <h3>Group, @group.Name</h3>
+
+    @if (IsGroupAdmin)
+    {
+        <div class="groupActions">
+            <button class="btn btn-primary" @onclick="() => DeleteGroup()">
+                <span class="bi bi-trash"></span>
+                Delete Group
+            </button>
+        </div>
+    }
+</div>
 
 <div class="GroupTopRow">
     <div class="users">
@@ -53,7 +56,7 @@
         <h4>Add New Transaction</h4>
         <EditForm Model="@newTransaction" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator/>
-        
+
             <div class="form-group">
                 <label for="amount">Amount</label>
                 <InputNumber id="amount" class="form-control" @bind-Value="newTransaction.Amount"/>
@@ -90,6 +93,33 @@
             <button type="submit" class="btn btn-primary">Add Transaction</button>
         </EditForm>
     </div>
+
+    <div>
+        <table>
+            <thead>
+            <tr>
+                <th>User</th>
+                <th>Paid</th>
+                <th>Expenses</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in userTotalAmounts)
+            {
+                <tr>
+                    <td>@user.GroupUser.User.Name</td>
+                    <td>@user.TotalPaid (@user.TransactionsPaid Transactions)</td>
+                    <td>@user.TotalSpent (@user.TransactionsSpent Transactions)</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    @if (IsGroupAdmin)
+    {
+        <CreateInvite GroupId="@group.Id"></CreateInvite>
+    }
 </div>
 
 <Transactions GroupId="@group.Id"></Transactions>
@@ -100,10 +130,11 @@
 
     public Group group { get; set; }
     public bool IsGroupAdmin { get; set; }
-    
+
     [SupplyParameterFromForm] public Transaction newTransaction { get; set; }
     private string shareOption = "default";
     private Dictionary<int, decimal> customShares = new Dictionary<int, decimal>();
+    private List<GroupService.UserTotalAmount> userTotalAmounts = new List<GroupService.UserTotalAmount>();
 
     protected override void OnInitialized()
     {
@@ -115,7 +146,9 @@
             {
                 navigationManager.NavigateTo("/error");
             }
+
             IsGroupAdmin = UserGroupAdmin().Result;
+            userTotalAmounts = groupService.GetUserTotalAmounts(group.Id);
             InitializeCustomShares();
         }
         catch (Exception ex)
@@ -124,7 +157,7 @@
             navigationManager.NavigateTo("/error");
         }
     }
-    
+
     private void InitializeCustomShares()
     {
         foreach (var groupUser in group.GroupUsers)
@@ -148,7 +181,7 @@
             // Consider providing user feedback here as well
         }
     }
-    
+
     private double GetSharePercentage(double share, Group group)
     {
         return Math.Round(share / group.GroupUsers.Sum(gu => gu.Share) * 100, 2);
@@ -169,14 +202,14 @@
         var user = authState.User;
         return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
-    
+
     private string GetUsername()
     {
         var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
         var user = authState.User;
         return user.FindFirstValue(ClaimTypes.Name);
     }
-    
+
     private async Task HandleValidSubmit()
     {
         try
@@ -196,10 +229,10 @@
                     customShares[groupUser.UserId] = groupUser.Share;
                 }
             }
-            
-             newTransaction.GroupId = group.Id;
-             newTransaction.UserId = GetUserId();
-             
+
+            newTransaction.GroupId = group.Id;
+            newTransaction.UserId = GetUserId();
+
             await transactionService.AddTransaction(newTransaction, customShares, group);
             StateHasChanged();
             navigationManager.NavigateTo($"/group/{group.Id}", true);

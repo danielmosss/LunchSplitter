@@ -28,8 +28,3 @@ table tbody tr {
 table tbody tr:nth-child(odd) {
     background-color: #ffffff;
 }
-
-.GroupTopRow{
-    display: flex;
-    gap: 100px;
-}
