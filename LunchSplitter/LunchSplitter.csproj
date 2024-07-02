@@ -17,8 +17,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Components\Pages\Popups\" />
       <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Pages\Popups\Popup.razor" />
     </ItemGroup>
 
 </Project>

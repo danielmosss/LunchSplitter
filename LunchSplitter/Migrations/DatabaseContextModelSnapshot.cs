@@ -55,6 +55,11 @@ namespace LunchSplitter.Migrations
                         .HasColumnType("int")
                         .HasColumnName("group_id");
 
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("name");
+
                     b.HasKey("id");
 
                     b.HasIndex("GroupId");
@@ -211,7 +216,7 @@ namespace LunchSplitter.Migrations
                             Id = 1,
                             Email = "admin@example.com",
                             Name = "SystemAdmin",
-                            Password = "hEc+vYla/jePZ7CuHGuiRoMmgkHb1F9UYjjYHrQzp5o=",
+                            Password = "Nd29F0/KD5hHPWWlayALqEPTzf6LcTdxYF2cJ7+YZkA=",
                             Salt = "System.Byte[]"
                         });
                 });

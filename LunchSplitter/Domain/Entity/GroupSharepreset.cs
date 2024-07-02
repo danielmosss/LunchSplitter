@@ -10,6 +10,9 @@ public class GroupSharepreset
     [Column("id")]
     public int id { get; set; }
     
+    [Column("name")]
+    public string name { get; set; }
+    
     [Column("group_id")]
     public int GroupId { get; set; }
     
