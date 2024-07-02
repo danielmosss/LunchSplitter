@@ -22,6 +22,7 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddTransient<GroupService>();
+builder.Services.AddTransient<TransactionService>();
 builder.Services.AddTransient<UserService>();
 builder.Services.AddDbContextFactory<DatabaseContext>(optionsBuilder =>
 {

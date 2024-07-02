@@ -126,11 +126,6 @@ namespace LunchSplitter.Migrations
                         .HasColumnType("int")
                         .HasColumnName("group_id");
 
-                    b.Property<string>("Image")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("image");
-
                     b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("user_id");
@@ -183,7 +178,7 @@ namespace LunchSplitter.Migrations
                             Id = 1,
                             Email = "admin@example.com",
                             Name = "SystemAdmin",
-                            Password = "uLmA+GQ4Z3jlUYQBsZVcXgiT7+7+s306cGquTx80tkE=",
+                            Password = "ubtS+zXrctrERRjaDDab7C12D1yArT32qvHGNsi82V4=",
                             Salt = "System.Byte[]"
                         });
                 });
@@ -213,18 +208,31 @@ namespace LunchSplitter.Migrations
 
             modelBuilder.Entity("a.TransactionShare", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("amount");
 
                     b.Property<int>("TransactionId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("transaction_id");
 
                     b.Property<int>("UserId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("user_id");
 
                     b.Property<string>("UserName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("user_name");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("TransactionId");
 

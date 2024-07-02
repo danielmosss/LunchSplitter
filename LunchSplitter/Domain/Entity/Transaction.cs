@@ -25,9 +25,6 @@ public class Transaction
     [Column("date")]
     public DateTime Date { get; set; }
     
-    [Column("image")]
-    public string Image { get; set; }
-    
     [ForeignKey("GroupId")]
     public Group Group { get; set; }
 

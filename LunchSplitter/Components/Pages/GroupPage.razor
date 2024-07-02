@@ -9,6 +9,7 @@
 @attribute [Authorize]
 @inject NavigationManager navigationManager
 @inject GroupService groupService
+@inject TransactionService transactionService
 
 <PageTitle>Group</PageTitle>
 
@@ -46,12 +47,53 @@
     </table>
 </div>
 
+<div class="newTransaction">
+    <h4>Add New Transaction</h4>
+    <EditForm Model="@newTransaction" OnValidSubmit="HandleValidSubmit">
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <InputNumber id="amount" class="form-control" @bind-Value="newTransaction.Amount" />
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <InputText id="description" class="form-control" @bind-Value="newTransaction.Description" />
+        </div>
+        <div class="form-group">
+            <label for="date">Date</label>
+            <InputDate id="date" class="form-control" @bind-Value="newTransaction.Date" />
+        </div>
+        <div class="form-group">
+            <label for="shareOption">Share Option</label>
+            <InputSelect id="shareOption" class="form-control" @bind-Value="shareOption">
+                <option value="default">Default Group Preset</option>
+                <option value="equal">Equally</option>
+                <option value="custom">Custom</option>
+            </InputSelect>
+        </div>
+        @if (shareOption == "custom")
+        {
+            <div class="form-group">
+                @foreach (var groupUser in group.GroupUsers)
+                {
+                    <label>@groupUser.User.Name</label>
+                    <InputNumber class="form-control" @bind-Value="customShares[groupUser.UserId]" />
+                }
+            </div>
+        }
+        <button type="submit" class="btn btn-primary">Add Transaction</button>
+    </EditForm>
+</div>
+
 @code {
     [Parameter] public string groupId { get; set; }
     [CascadingParameter] public HttpContext? HttpContext { get; set; }
 
     public Group group { get; set; }
     public bool IsGroupAdmin { get; set; }
+    
+    private Transaction newTransaction = new Transaction { Date = DateTime.Now };
+    private string shareOption = "default";
+    private Dictionary<int, decimal> customShares = new Dictionary<int, decimal>();
 
     protected override void OnInitialized()
     {
@@ -63,11 +105,20 @@
                 navigationManager.NavigateTo("/error");
             }
             IsGroupAdmin = UserGroupAdmin().Result;
+            InitializeCustomShares();
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error initializing component: {ex.Message}");
             navigationManager.NavigateTo("/error");
+        }
+    }
+    
+    private void InitializeCustomShares()
+    {
+        foreach (var groupUser in group.GroupUsers)
+        {
+            customShares[groupUser.UserId] = 0;
         }
     }
 
@@ -99,5 +150,52 @@
         var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
         var groupUser = group.GroupUsers.FirstOrDefault(gu => gu.UserId == int.Parse(userId));
         return groupUser != null && groupUser.IsAdmin;
+    }
+
+    private int GetUserId()
+    {
+        var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var user = authState.User;
+        return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+    }
+    
+    private string GetUsername()
+    {
+        var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var user = authState.User;
+        return user.FindFirstValue(ClaimTypes.Name);
+    }
+    
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            if (shareOption == "equal")
+            {
+                decimal equalShare = Math.Round(newTransaction.Amount / group.GroupUsers.Count, 2);
+                foreach (var groupUser in group.GroupUsers)
+                {
+                    customShares[groupUser.UserId] = equalShare;
+                }
+            }
+            else if (shareOption == "default")
+            {
+                foreach (var groupUser in group.GroupUsers)
+                {
+                    customShares[groupUser.UserId] = groupUser.Share;
+                }
+            }
+            
+             newTransaction.GroupId = group.Id;
+             newTransaction.UserId = GetUserId();
+             
+            await transactionService.AddTransaction(newTransaction, customShares, group, GetUsername());
+            StateHasChanged();
+            navigationManager.NavigateTo($"/group/{group.Id}", true);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding transaction: {ex.Message}");
+        }
     }
 }
