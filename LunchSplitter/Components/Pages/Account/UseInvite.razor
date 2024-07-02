@@ -8,14 +8,16 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 
 <h1>
-    <Spinner />
+    <Spinner Color="SpinnerColor.Primary" />
     Using invite...
-    You will be redirected shortly.
 </h1>
+<h5>
+    If you are not redirected, click <a href="/">here</a>.
+</h5>
 
 @code {
     [Parameter] public string inviteId { get; set; }
-
+    
     protected override void OnInitialized()
     {
         var invite = new GroupInvite();
