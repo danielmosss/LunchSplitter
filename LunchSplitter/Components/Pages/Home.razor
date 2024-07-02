@@ -15,7 +15,39 @@
 </div>
 
 <AuthorizeView>
-    <Authorized></Authorized>
+    <Authorized>
+        <div class="groups">
+            @foreach (var group in groupService.GetGroupsByUserId(GetUserId()))
+            {
+            <div class="group">
+                <div class="groupinfo">
+                    <i class="bi bi-card-checklist h1"></i>
+                    <div>
+                        <h3>@group.Name</h3>
+                        <p>@group.GroupUsers.Count users</p>
+                    </div>
+                </div>
+                <button class="btn btn-primary"
+                        @onclick="() => NavigateToGroup(group.Id)">
+                    Go to group
+                </button>
+            </div>
+            }
+            <div class="group">
+                <EditForm Model="NewGroup" OnValidSubmit="HandleSubmit" FormName="CreateGroup" Context="another_name">
+                    <DataAnnotationsValidator/>
+
+                    <div>
+                        <label for="NameInput">Name</label>
+                        <InputText id="NameInput" @bind-Value="NewGroup.Name"/>
+                        <ValidationMessage For="@(() => NewGroup.Name)"/>
+                    </div>
+
+                    <button type="submit">Submit</button>
+                </EditForm>
+            </div>
+        </div>
+    </Authorized>
     <NotAuthorized>
         <div>
             <NavLink href="login" class="btn btn-primary">Login</NavLink>
@@ -23,38 +55,6 @@
         </div>
     </NotAuthorized>
 </AuthorizeView>
-
-<div class="groups">
-    @foreach (var group in groupService.GetGroupsByUserId(GetUserId()))
-    {
-        <div class="group">
-            <div class="groupinfo">
-                <i class="bi bi-card-checklist h1"></i>
-                <div>
-                    <h3>@group.Name</h3>
-                    <p>@group.GroupUsers.Count users</p>
-                </div>
-            </div>
-            <button class="btn btn-primary"
-                    @onclick="() => NavigateToGroup(group.Id)">
-                Go to group
-            </button>
-        </div>
-    }
-    <div class="group">
-        <EditForm Model="NewGroup" OnValidSubmit="HandleSubmit" FormName="CreateGroup">
-            <DataAnnotationsValidator/>
-
-            <div>
-                <label for="NameInput">Name</label>
-                <InputText id="NameInput" @bind-Value="NewGroup.Name"/>
-                <ValidationMessage For="@(() => NewGroup.Name)"/>
-            </div>
-
-            <button type="submit">Submit</button>
-        </EditForm>
-    </div>
-</div>
 
 @code
 {
@@ -90,8 +90,8 @@
         groupService.AddGroup(NewGroup, GetUserId());
 
         NewGroup = new Group();
-        await Task.Delay(2000);
+        await Task.Delay(500);
         // reload page
-        navigationManager.NavigateTo("/groups", true);
+        navigationManager.NavigateTo("/", true);
     }
 }

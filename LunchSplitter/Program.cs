@@ -32,6 +32,16 @@ builder.Services.AddDbContextFactory<DatabaseContext>(optionsBuilder =>
 
 var app = builder.Build();
 
+// Migrate the database
+using (var scope = app.Services.CreateScope())
+{
+    var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<DatabaseContext>>();
+    using (var dbContext = dbContextFactory.CreateDbContext())
+    {
+        dbContext.Database.Migrate();
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
