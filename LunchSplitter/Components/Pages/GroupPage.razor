@@ -25,64 +25,74 @@
     </div>
 }
 
-<div class="users">
-    <h4>Users</h4>
-    <table>
-        <tr>
-            <th>User</th>
-            <th>IsAdmin</th>
-            <th>Share</th>
-        </tr>
-        @foreach (var groupUser in group.GroupUsers)
-        {
+<div class="GroupTopRow">
+    <div class="users">
+        <h4>Users</h4>
+        <table>
             <tr>
-                <td>@groupUser.User.Name</td>
-                <td>@groupUser.IsAdmin</td>
-                <td>
-                    @groupUser.Share
-                    (@GetSharePercentage(groupUser.Share, group)%)
-                </td>
+                <th>User</th>
+                <th>IsAdmin</th>
+                <th>Share</th>
             </tr>
-        }
-    </table>
+            @foreach (var groupUser in group.GroupUsers)
+            {
+                <tr>
+                    <td>@groupUser.User.Name</td>
+                    <td>@groupUser.IsAdmin</td>
+                    <td>
+                        @groupUser.Share
+                        (@GetSharePercentage(groupUser.Share, group)%)
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+
+
+    <div class="newTransaction">
+        <h4>Add New Transaction</h4>
+        <EditForm Model="@newTransaction" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator/>
+        
+            <div class="form-group">
+                <label for="amount">Amount</label>
+                <InputNumber id="amount" class="form-control" @bind-Value="newTransaction.Amount"/>
+                <ValidationMessage For="@(() => newTransaction.Amount)"/>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <InputText id="description" class="form-control" @bind-Value="newTransaction.Description"/>
+                <ValidationMessage For="@(() => newTransaction.Description)"/>
+            </div>
+            <div class="form-group">
+                <label for="date">Date</label>
+                <InputDate id="date" class="form-control" @bind-Value="newTransaction.Date"/>
+                <ValidationMessage For="@(() => newTransaction.Date)"/>
+            </div>
+            <div class="form-group">
+                <label for="shareOption">Share Option</label>
+                <InputSelect id="shareOption" class="form-control" @bind-Value="shareOption">
+                    <option value="default">Default Group Preset</option>
+                    <option value="equal">Equally</option>
+                    @* <option value="custom">Custom</option> *@
+                </InputSelect>
+            </div>
+            @* @if (shareOption == "custom") *@
+            @* { *@
+            @*     <div class="form-group"> *@
+            @*         @foreach (var groupUser in group.GroupUsers) *@
+            @*         { *@
+            @*             <label>@groupUser.User.Name</label> *@
+            @*             <InputNumber class="form-control" @bind-Value="customShares[groupUser.UserId]"/> *@
+            @*         } *@
+            @*     </div> *@
+            @* } *@
+            <button type="submit" class="btn btn-primary">Add Transaction</button>
+        </EditForm>
+    </div>
 </div>
 
-<div class="newTransaction">
-    <h4>Add New Transaction</h4>
-    <EditForm Model="@newTransaction" OnValidSubmit="HandleValidSubmit">
-        <div class="form-group">
-            <label for="amount">Amount</label>
-            <InputNumber id="amount" class="form-control" @bind-Value="newTransaction.Amount" />
-        </div>
-        <div class="form-group">
-            <label for="description">Description</label>
-            <InputText id="description" class="form-control" @bind-Value="newTransaction.Description" />
-        </div>
-        <div class="form-group">
-            <label for="date">Date</label>
-            <InputDate id="date" class="form-control" @bind-Value="newTransaction.Date" />
-        </div>
-        <div class="form-group">
-            <label for="shareOption">Share Option</label>
-            <InputSelect id="shareOption" class="form-control" @bind-Value="shareOption">
-                <option value="default">Default Group Preset</option>
-                <option value="equal">Equally</option>
-                <option value="custom">Custom</option>
-            </InputSelect>
-        </div>
-        @if (shareOption == "custom")
-        {
-            <div class="form-group">
-                @foreach (var groupUser in group.GroupUsers)
-                {
-                    <label>@groupUser.User.Name</label>
-                    <InputNumber class="form-control" @bind-Value="customShares[groupUser.UserId]" />
-                }
-            </div>
-        }
-        <button type="submit" class="btn btn-primary">Add Transaction</button>
-    </EditForm>
-</div>
+<Transactions GroupId="@group.Id"></Transactions>
 
 @code {
     [Parameter] public string groupId { get; set; }
@@ -91,12 +101,13 @@
     public Group group { get; set; }
     public bool IsGroupAdmin { get; set; }
     
-    private Transaction newTransaction = new Transaction { Date = DateTime.Now };
+    [SupplyParameterFromForm] public Transaction newTransaction { get; set; }
     private string shareOption = "default";
     private Dictionary<int, decimal> customShares = new Dictionary<int, decimal>();
 
     protected override void OnInitialized()
     {
+        newTransaction ??= new Transaction { Date = DateTime.Now };
         try
         {
             group = groupService.GetGroupById(int.Parse(groupId));
@@ -189,7 +200,7 @@
              newTransaction.GroupId = group.Id;
              newTransaction.UserId = GetUserId();
              
-            await transactionService.AddTransaction(newTransaction, customShares, group, GetUsername());
+            await transactionService.AddTransaction(newTransaction, customShares, group);
             StateHasChanged();
             navigationManager.NavigateTo($"/group/{group.Id}", true);
         }

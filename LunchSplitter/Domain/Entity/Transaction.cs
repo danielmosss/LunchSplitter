@@ -10,15 +10,21 @@ public class Transaction
     [Column("id")]
     public int Id { get; set; }
     
+    [Required]
     [Column("group_id")]
     public int GroupId { get; set; }
     
+    [Required]
     [Column("user_id")]
     public int UserId { get; set; }
     
+    [Required]
+    [Range(0.01, double.MaxValue, ErrorMessage = "Amount must be greater than zero")]
     [Column("amount")]
     public decimal Amount { get; set; }
     
+    [Required]
+    [StringLength(100, ErrorMessage = "Description length can't be more than 100.")]
     [Column("description")]
     public string Description { get; set; }
     

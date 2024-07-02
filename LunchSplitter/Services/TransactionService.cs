@@ -14,7 +14,7 @@ public class TransactionService
         _dbContextFactory = dbContextFactory;
     }
     
-    public async Task<int> AddTransaction(Transaction transaction, Dictionary<int, decimal> customShares, Group group, string username)
+    public async Task<int> AddTransaction(Transaction transaction, Dictionary<int, decimal> customShares, Group group)
     {
         using (var context = _dbContextFactory.CreateDbContext())
         {
@@ -26,6 +26,7 @@ public class TransactionService
             
             foreach (var share in customShares)
             {
+                var username = context.Users.FirstOrDefault(u => u.Id == share.Key).Name;
                 var transactionShare = new TransactionShare
                 {
                     TransactionId = transaction.Id,
@@ -49,4 +50,32 @@ public class TransactionService
         }
     }
 
+    public async Task<List<Transaction>> GetTransactions(int groupId)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            var transactions = context.Transactions
+                .Include(x => x.User)
+                .Where(t => t.GroupId == groupId)
+                .OrderByDescending(t => t.Date)
+                .Take(25)
+                .ToList();
+            return transactions;
+        }
+    }
+    
+    public List<TransactionShare> GetTransactionShares(int transactionId)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            var transactionShares = context.TransactionShares
+                .Where(ts => ts.TransactionId == transactionId)
+                .ToList();
+            if (transactionShares.Count == 0)
+            {
+                return new List<TransactionShare>();
+            }
+            return transactionShares;
+        }
+    }
 }

@@ -1,12 +1,13 @@
 ﻿@page "/transactions"
+@using LunchSplitter.Domain.Entity
+@using LunchSplitter.Services
 @attribute [StreamRendering]
 @attribute [Authorize]
+@inject TransactionService transactionService
 
 <PageTitle>Transactions</PageTitle>
 
 <h1>Transactions</h1>
-
-<p>This component demonstrates showing data.</p>
 
 @if (forecasts == null)
 {
@@ -19,20 +20,25 @@ else
     <table class="table">
         <thead>
         <tr>
+            <th>User</th>
+            <th>Amount</th>
             <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
+            <th>Shared</th>
         </tr>
         </thead>
         <tbody>
-        @foreach (var forecast in forecasts)
+        @foreach (var tx in transactions)
         {
             <tr>
-                <td>@forecast.Date.ToShortDateString()</td>
-                <td>@forecast.TemperatureC</td>
-                <td>@forecast.TemperatureF</td>
-                <td>@forecast.Summary</td>
+                <td>@tx.User.Name</td>
+                <td>@tx.Amount</td>
+                <td>@tx.Date</td>
+                <td class="sharedTable">
+                    @foreach (var shared in @transactionService.GetTransactionShares(@tx.Id))
+                    {
+                        <span>(@shared.UserName -€@shared.Amount)</span>
+                    }
+                </td>
             </tr>
         }
         </tbody>
@@ -40,7 +46,12 @@ else
 }
 
 @code {
+    [Parameter]
+    public int GroupId { get; set; }
+    
     private WeatherForecast[]? forecasts;
+    
+    private List<Transaction>? transactions;
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,6 +66,8 @@ else
             TemperatureC = Random.Shared.Next(-20, 55),
             Summary = summaries[Random.Shared.Next(summaries.Length)]
         }).ToArray();
+
+        transactions = await transactionService.GetTransactions(GroupId);
     }
 
     private class WeatherForecast
@@ -64,5 +77,4 @@ else
         public string? Summary { get; set; }
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
-
 }
