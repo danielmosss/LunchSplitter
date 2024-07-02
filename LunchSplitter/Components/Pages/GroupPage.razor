@@ -1,0 +1,81 @@
+﻿@page "/group/{groupId}"
+@using System.Text.RegularExpressions
+@rendermode InteractiveServer
+@using LunchSplitter.Services
+@using Group = LunchSplitter.Domain.Entity.Group
+@attribute [Authorize]
+@inject NavigationManager navigationManager
+@inject GroupService groupService
+
+<PageTitle>Group</PageTitle>
+
+<h3>Group, @group.Name</h3>
+
+<div class="groupActions">
+    <button class="btn btn-primary">
+        <span class="bi bi-plus-square"></span>
+        Add Transaction
+    </button>
+
+    <button class="btn btn-primary">
+        <span class="bi bi-plus-square"></span>
+        Add Moneytransfer
+    </button>
+
+    <button class="btn btn-primary" @onclick="() => DeleteGroup()">
+        <span class="bi bi-trash"></span>
+        Delete Group
+    </button>
+</div>
+
+<div class="users">
+    <h4>Users</h4>
+    <ul>
+        @foreach (var groupUser in group.GroupUsers)
+        {
+            <li>@groupUser.User.Name</li>
+        }
+    </ul>
+</div>
+
+
+@code {
+    [Parameter] public string groupId { get; set; }
+    [CascadingParameter] public HttpContext? HttpContext { get; set; }
+
+    public Group group { get; set; }
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            group = groupService.GetGroupById(int.Parse(groupId));
+            if (group == null)
+            {
+                navigationManager.NavigateTo("/error");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error initializing component: {ex.Message}");
+            navigationManager.NavigateTo("/error");
+        }
+    }
+
+    private void DeleteGroup()
+    {
+        try
+        {
+            groupService.DeleteGroup(group.Id);
+            StateHasChanged();
+            navigationManager.NavigateTo("/");
+        }
+        catch (Exception ex)
+        {
+            // Log the exception or handle it as needed
+            Console.WriteLine($"Failed to delete group: {ex.Message}");
+            // Consider providing user feedback here as well
+        }
+    }
+
+}

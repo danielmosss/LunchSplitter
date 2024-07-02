@@ -1,20 +1,70 @@
-﻿@page "/counter"
+﻿@page "/overview"
+@using System.Security.Claims
+@using LunchSplitter.Domain.Entity
+@using LunchSplitter.Services
 @rendermode InteractiveServer
+@inject GroupService groupService
+@attribute [Authorize]
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager navigationManager
+
 
 <PageTitle>Overview</PageTitle>
 
-<h1>Overview</h1>
+<div>
+    <h2>Groups</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
+        @foreach (var group in groupService.GetGroups())
+        {
+            // border for each group and make it a square with 200px width
+            <div style="border: solid #000000 1px; width: 200px; margin: 10px; padding: 10px; text-align: center;">
+                <button @onclick="() => NavigateToGroup(group.Id)">Go to group</button>
+                <h3>@group.Name</h3>
+                <p>@group.GroupUsers.Count users</p>
+            </div>
+        }
+    </div>
+</div>
 
-<p role="status">Current count: @currentCount</p>
+<div style="border: #000000">
+    <h2>Create a new group</h2>
+    <EditForm Model="NewGroup" OnSubmit="HandleSubmit" FormName="CreateGroup">
+        <DataAnnotationsValidator/>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+        <div>
+            <label for="NameInput">Name</label>
+            <InputText id="NameInput" @bind-Value="NewGroup.Name"/>
+            <ValidationMessage For="@(() => NewGroup.Name)"/>
+        </div>
+
+        <button type="submit">Submit</button>
+    </EditForm>
+</div>
 
 @code {
-    private int currentCount = 0;
+    [SupplyParameterFromForm] public Group NewGroup { get; set; }
 
-    private void IncrementCount()
+    [CascadingParameter] public HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized() => NewGroup ??= new();
+
+    private async void HandleSubmit()
     {
-        currentCount++;
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        groupService.AddGroup(NewGroup, int.Parse(userId));
+
+        NewGroup = new Group();
+        await Task.Delay(2000);
+        // reload page
+        navigationManager.NavigateTo("/overview", true);
+    }
+    
+    private void NavigateToGroup(int groupId)
+    {
+        navigationManager.NavigateTo($"/group/{groupId}");
     }
 
 }

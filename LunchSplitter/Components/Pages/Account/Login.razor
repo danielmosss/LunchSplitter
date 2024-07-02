@@ -22,7 +22,7 @@
         
         <div class="form-group">
             <label for="password">Password</label>
-            <InputText id="password" class="form-control" @bind-Value="@Model.Password" />
+            <InputText type="password" id="password" class="form-control" @bind-Value="@Model.Password"  />
             <ValidationMessage For="@(() => Model.Password)" />
         </div>  
         
@@ -57,8 +57,6 @@
     {
         var user = userService.GetUserByUsername(Model.Username);
         var hashedPassword = UserService.HashPassword(Model.Password, user.Salt);
-        Console.WriteLine(hashedPassword);
-        Console.WriteLine(user.Password);
         if (user == null || UserService.CompareHash(Model.Password, user.Password, user.Salt) == false)
         {
             errorMessage = "Invalid username or password";

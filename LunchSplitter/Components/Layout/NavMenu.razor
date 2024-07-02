@@ -1,4 +1,7 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using LunchSplitter.Services
+@inject GroupService groupService
+
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">LunchSplitter</a>
     </div>
@@ -6,24 +9,59 @@
 
 <input type="checkbox" title="Navigation menu" class="navbar-toggler"/>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+<AuthorizeView>
+    <Authorized>
+        <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                        <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                    </NavLink>
+                </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Overview
-            </NavLink>
-        </div>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="overview">
+                        <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Overview
+                    </NavLink>
+                </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Transactions
-            </NavLink>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="transactions">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Transactions
+                    </NavLink>
+                </div>
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link">
+                        <span class="bi bi-bi-card-list" aria-hidden="true"></span> Groups
+                    </NavLink>
+                </div>
+
+                @foreach (var group in groupService.GetGroups())
+                {
+                    <div class="nav-item px-3" style="margin-left: 20px">
+                        <NavLink class="nav-link" href="@("group/" + group.Id)">
+                            <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> @group.Name
+                        </NavLink>
+                    </div>
+                }
+            </nav>
         </div>
-    </nav>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
+            <nav class="flex-column">
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="login">
+                        <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Login
+                    </NavLink>
+                </div>
+            </nav>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+
+
+}

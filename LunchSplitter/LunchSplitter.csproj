@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Components\Pages\Popups\" />
       <Folder Include="Migrations\" />
     </ItemGroup>
 

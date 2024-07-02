@@ -1,47 +1,35 @@
 ﻿@page "/"
-@using LunchSplitter.Domain.Entity
-@using LunchSplitter.Services
-@inject GroupService groupService
 
 <PageTitle>Home</PageTitle>
 
-@* list of all groups this user is in*@
 <div>
-    <h2>Groups</h2>
-    @foreach (var group in groupService.GetGroups())
-    {
-        <div>
-            <h3>@group.Name</h3>
-            <p>@group.GroupUsers.Count users</p>
-        </div>
-    }
+    <h2>Welcome to LunchSplitter, @userName</h2>
+    <p>Split your lunch bill with your friends</p>
 </div>
 
-<div style="border: #000000">
-    <h2>Create a new group</h2>
-    <EditForm Model="newGroup" OnSubmit="HandleSubmit" FormName="CreateGroup">
-        <DataAnnotationsValidator />
-
+<AuthorizeView>
+    <Authorized></Authorized>
+    <NotAuthorized>
         <div>
-            <label for="NameInput">Name</label>
-            <InputText id="NameInput" @bind-Value="newGroup.Name" />
-            <ValidationMessage For="@(() => newGroup.Name)" />
+            <NavLink href="login" class="btn btn-primary">Login</NavLink>
+            <NavLink href="signup" class="btn btn-primary">Signup</NavLink>
         </div>
-    
-        <button type="submit">Submit</button>
-    </EditForm>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code
 {
-    [SupplyParameterFromForm]
-    public Group newGroup { get; set; }
+    [CascadingParameter] public HttpContext? HttpContext { get; set; }
 
-    protected override void OnInitialized() => newGroup ??= new();
+    private string userName;
 
-    private void HandleSubmit()
+    protected override void OnInitialized()
     {
-        groupService.AddGroup(newGroup);
-        newGroup = new Group(); // Reset form after submission if needed
+        userName = "Guest";
+        if (HttpContext?.User.Identity?.IsAuthenticated == true)
+        {
+            userName = HttpContext.User.Identity.Name;
+        }
     }
+
 }
