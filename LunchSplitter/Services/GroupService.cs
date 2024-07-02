@@ -22,6 +22,17 @@ public class GroupService
         var groups = context.Groups.Include(g => g.GroupUsers).ThenInclude(gu => gu.User).ToList();
         return groups;
     }
+    
+    public List<Group> GetGroupsByUserId(int userId)
+    {
+        using var context = _dbContextFactory.CreateDbContext();
+        var groups = context.Groups
+            .Include(g => g.GroupUsers)
+            .ThenInclude(gu => gu.User)
+            .Where(g => g.GroupUsers.Any(gu => gu.UserId == userId))
+            .ToList();
+        return groups;
+    }
 
     public Group GetGroupById(int groupId)
     {

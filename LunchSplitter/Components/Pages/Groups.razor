@@ -5,7 +5,7 @@
 @rendermode InteractiveServer
 @inject GroupService groupService
 @attribute [Authorize]
-@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject AuthenticationStateProvider authenticationStateProvider
 @inject NavigationManager navigationManager
 
 
@@ -14,7 +14,7 @@
 <div>
     <h2>Groups</h2>
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));">
-        @foreach (var group in groupService.GetGroups())
+        @foreach (var group in groupService.GetGroupsByUserId(GetUserId()))
         {
             <div style="border: solid #000000 1px; width: 200px; margin: 10px; padding: 10px; text-align: center;">
                 <button @onclick="() => NavigateToGroup(group.Id)">Go to group</button>
@@ -49,11 +49,7 @@
 
     private async void HandleSubmit()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        groupService.AddGroup(NewGroup, int.Parse(userId));
+        groupService.AddGroup(NewGroup, GetUserId());
 
         NewGroup = new Group();
         await Task.Delay(2000);
@@ -64,6 +60,13 @@
     private void NavigateToGroup(int groupId)
     {
         navigationManager.NavigateTo($"/group/{groupId}");
+    }
+    
+    private int GetUserId()
+    {
+        var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var user = authState.User;
+        return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
 
 }

@@ -28,3 +28,7 @@ table tbody tr {
 table tbody tr:nth-child(odd) {
     background-color: #ffffff;
 }
+
+.divider{
+    height: 50px;
+}

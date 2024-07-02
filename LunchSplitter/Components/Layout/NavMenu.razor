@@ -1,5 +1,9 @@
-﻿@using LunchSplitter.Services
+﻿@using System.Security.Claims
+@using LunchSplitter.Domain.Entity
+@using LunchSplitter.Services
 @inject GroupService groupService
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider authenticationStateProvider
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -25,7 +29,7 @@
                     </NavLink>
                 </div>
 
-                @foreach (var group in groupService.GetGroups())
+                @foreach (var group in userGroups)
                 {
                     <div class="nav-item px-3" style="margin-left: 20px">
                         <NavLink class="nav-link" href="@("group/" + group.Id)">
@@ -51,5 +55,25 @@
 
 @code{
 
+    private List<Group> userGroups = new List<Group>();
+
+    protected override void OnInitialized()
+    {
+        try
+        {
+            userGroups = groupService.GetGroupsByUserId(GetUserId());
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error initializing component: {ex.Message}");
+        }
+    }
+    
+    private int GetUserId()
+    {
+        var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var user = authState.User;
+        return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+    }
 
 }

@@ -14,7 +14,7 @@
 <PageTitle>Group</PageTitle>
 
 
-<div style="display: flex">
+<div style="display: flex; gap: 10px">
     <h3>Group, @group.Name</h3>
 
     @if (IsGroupAdmin)
@@ -101,6 +101,7 @@
                 <th>User</th>
                 <th>Paid</th>
                 <th>Expenses</th>
+                <th>Balance</th>
             </tr>
             </thead>
             <tbody>
@@ -110,6 +111,7 @@
                     <td>@user.GroupUser.User.Name</td>
                     <td>@user.TotalPaid (@user.TransactionsPaid Transactions)</td>
                     <td>@user.TotalSpent (@user.TransactionsSpent Transactions)</td>
+                    <td>@(@user.TotalPaid - @user.TotalSpent)</td>
                 </tr>
             }
             </tbody>
@@ -122,7 +124,7 @@
     }
 </div>
 
-<Transactions GroupId="@group.Id"></Transactions>
+<Transactions GroupId="@group.Id" IsGroupAdmin="IsGroupAdmin"></Transactions>
 
 @code {
     [Parameter] public string groupId { get; set; }
@@ -224,16 +226,18 @@
             }
             else if (shareOption == "default")
             {
+                var totalShares = group.GroupUsers.Sum(x => x.Share);
                 foreach (var groupUser in group.GroupUsers)
                 {
-                    customShares[groupUser.UserId] = groupUser.Share;
+                    var Amount = newTransaction.Amount * groupUser.Share / totalShares; 
+                    customShares[groupUser.UserId] = Amount;
                 }
             }
 
             newTransaction.GroupId = group.Id;
             newTransaction.UserId = GetUserId();
 
-            await transactionService.AddTransaction(newTransaction, customShares, group);
+            await transactionService.AddTransaction(newTransaction, customShares);
             StateHasChanged();
             navigationManager.NavigateTo($"/group/{group.Id}", true);
         }

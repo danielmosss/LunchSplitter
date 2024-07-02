@@ -21,9 +21,11 @@ else
         <thead>
         <tr>
             <th>User</th>
+            <th>Description</th>
             <th>Amount</th>
             <th>Date</th>
             <th>Shared</th>
+            <th>Delete</th>
         </tr>
         </thead>
         <tbody>
@@ -31,12 +33,21 @@ else
         {
             <tr>
                 <td>@tx.User.Name</td>
+                <td>@tx.Description</td>
                 <td>@tx.Amount</td>
                 <td>@tx.Date</td>
                 <td class="sharedTable">
                     @foreach (var shared in @transactionService.GetTransactionShares(@tx.Id))
                     {
                         <span>(@shared.UserName -€@shared.Amount)</span>
+                    }
+                </td>
+                <td>
+                    @if (IsGroupAdmin)
+                    {
+                        <button class="btn btn-danger" @onclick="() => DeleteTransaction(tx.Id)">
+                            <span class="bi bi-trash"></span>
+                        </button>
                     }
                 </td>
             </tr>
@@ -49,10 +60,19 @@ else
     [Parameter]
     public int GroupId { get; set; }
     
+    [Parameter]
+    public bool IsGroupAdmin { get; set; }
+    
     private List<Transaction>? transactions;
 
     protected override async Task OnInitializedAsync()
     {
         transactions = await transactionService.GetTransactions(GroupId);
+    }
+    
+    private void DeleteTransaction(int transactionId)
+    {
+        transactionService.DeleteTransaction(transactionId);
+        transactions = transactions.Where(tx => tx.Id != transactionId).ToList();
     }
 }

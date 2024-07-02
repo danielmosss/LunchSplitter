@@ -14,15 +14,13 @@ public class TransactionService
         _dbContextFactory = dbContextFactory;
     }
     
-    public async Task<int> AddTransaction(Transaction transaction, Dictionary<int, decimal> customShares, Group group)
+    public async Task<int> AddTransaction(Transaction transaction, Dictionary<int, decimal> customShares)
     {
         using (var context = _dbContextFactory.CreateDbContext())
         {
             var transAction = transaction;
             context.Transactions.Add(transAction);
             context.SaveChanges();
-            
-            var totalShares = group.GroupUsers.Sum(x => x.Share);
             
             foreach (var share in customShares)
             {
@@ -31,7 +29,7 @@ public class TransactionService
                 {
                     TransactionId = transaction.Id,
                     UserId = share.Key,
-                    Amount = transaction.Amount * (share.Value / totalShares),
+                    Amount = share.Value,
                     UserName = username
                 };
                 context.TransactionShares.Add(transactionShare);
@@ -76,6 +74,20 @@ public class TransactionService
                 return new List<TransactionShare>();
             }
             return transactionShares;
+        }
+    }
+    
+    public void DeleteTransaction(int transactionId)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            var transaction = context.Transactions.FirstOrDefault(t => t.Id == transactionId);
+            if (transaction == null)
+            {
+                return;
+            }
+            context.Transactions.Remove(transaction);
+            context.SaveChanges();
         }
     }
 }
