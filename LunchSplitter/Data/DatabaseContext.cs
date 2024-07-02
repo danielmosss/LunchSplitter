@@ -42,5 +42,20 @@ public class DatabaseContext : DbContext
                 Password = hash.hashed,
                 Salt = hash.salt.ToString()
             });
+        
+        //create unique constraint on name 
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Name)
+            .IsUnique();
+
+        modelBuilder.Entity<GroupUser>()
+            .HasIndex(gu => new { gu.GroupId, gu.UserId })
+            .IsUnique();
+
+        modelBuilder.Entity<TransactionShare>()
+            .HasIndex(ts => new { ts.TransactionId, ts.UserId })
+            .IsUnique();
+        
+        
     }
 }

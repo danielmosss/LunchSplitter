@@ -1,4 +1,11 @@
 ﻿@page "/"
+@using System.Security.Claims
+@using LunchSplitter.Domain.Entity
+@using LunchSplitter.Services
+@rendermode InteractiveServer
+@inject GroupService groupService
+@inject AuthenticationStateProvider authenticationStateProvider
+@inject NavigationManager navigationManager
 
 <PageTitle>Home</PageTitle>
 
@@ -17,14 +24,48 @@
     </NotAuthorized>
 </AuthorizeView>
 
+<div class="groups">
+    @foreach (var group in groupService.GetGroupsByUserId(GetUserId()))
+    {
+        <div class="group">
+            <div class="groupinfo">
+                <i class="bi bi-card-checklist h1"></i>
+                <div>
+                    <h3>@group.Name</h3>
+                    <p>@group.GroupUsers.Count users</p>
+                </div>
+            </div>
+            <button class="btn btn-primary"
+                    @onclick="() => NavigateToGroup(group.Id)">
+                Go to group
+            </button>
+        </div>
+    }
+    <div class="group">
+        <EditForm Model="NewGroup" OnValidSubmit="HandleSubmit" FormName="CreateGroup">
+            <DataAnnotationsValidator/>
+
+            <div>
+                <label for="NameInput">Name</label>
+                <InputText id="NameInput" @bind-Value="NewGroup.Name"/>
+                <ValidationMessage For="@(() => NewGroup.Name)"/>
+            </div>
+
+            <button type="submit">Submit</button>
+        </EditForm>
+    </div>
+</div>
+
 @code
 {
+    [SupplyParameterFromForm] public Group NewGroup { get; set; }
     [CascadingParameter] public HttpContext? HttpContext { get; set; }
 
     private string userName;
 
     protected override void OnInitialized()
     {
+        NewGroup ??= new();
         userName = "Guest";
         if (HttpContext?.User.Identity?.IsAuthenticated == true)
         {
@@ -32,4 +73,25 @@
         }
     }
 
+    private int GetUserId()
+    {
+        var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
+        var user = authState.User;
+        return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
+    }
+
+    private void NavigateToGroup(int groupId)
+    {
+        navigationManager.NavigateTo($"/group/{groupId}");
+    }
+    
+    private async void HandleSubmit()
+    {
+        groupService.AddGroup(NewGroup, GetUserId());
+
+        NewGroup = new Group();
+        await Task.Delay(2000);
+        // reload page
+        navigationManager.NavigateTo("/groups", true);
+    }
 }

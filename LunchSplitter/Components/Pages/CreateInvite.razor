@@ -49,7 +49,6 @@
     private void HandleValidSubmit()
     {
         newInvite.GroupId = GroupId;
-        newInvite.usage = 0;
         groupService.CreateInvite(newInvite);
     }
     

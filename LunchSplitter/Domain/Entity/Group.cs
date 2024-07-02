@@ -10,9 +10,9 @@ public class Group
     [Column("id")]
     public int Id { get; set; }
     
-    [Column("name")]
     [Required]
-    [MaxLength(100)]
+    [StringLength(100, ErrorMessage = "length can't be more than 100.")]
+    [Column("name")]
     public string Name { get; set; }
     
     public List<Transaction> Transactions { get; set; }

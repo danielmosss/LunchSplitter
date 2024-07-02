@@ -66,7 +66,7 @@ public class GroupService
         }
     }
     
-    public async void AddUserToGroup(Group group, int userId, bool isAdmin = false)
+    public async Task<Boolean> AddUserToGroup(Group group, int userId, bool isAdmin = false)
     {
         using (var context = _dbContextFactory.CreateDbContext())
         {
@@ -80,7 +80,7 @@ public class GroupService
             if (UserAlreadyInGroup(dbGroup.Id, userId))
             {
                 Console.WriteLine("User already in group");
-                return;
+                return false;
             }
 
             GroupUser groupUser = new GroupUser
@@ -95,6 +95,7 @@ public class GroupService
             }
             dbGroup.GroupUsers.Add(groupUser);
             await context.SaveChangesAsync();
+            return true;
         }
     }
     
@@ -174,24 +175,28 @@ public class GroupService
         }
     }
     
-    public void UseInvite(Guid inviteId, int userId)
+    public async void UseInvite(Guid inviteId, int userId)
     {
         using (var context = _dbContextFactory.CreateDbContext())
         {
             GroupInvite invite = context.GroupInvites.Find(inviteId);
-            if (invite == null || invite.usage < 1)
+            if (invite == null)
             {
                 return;
             }
-            else if (invite.usage == 1)
+            
+            if (invite.usage < 2)
             {
                 context.GroupInvites.Remove(invite);
             }
             
             var group = context.Groups.Find(invite.GroupId);
-            AddUserToGroup(group, userId);
-            
-            context.SaveChanges();
+            var result = await AddUserToGroup(group, userId);
+            if (result)
+            {
+                invite.usage--;
+                context.SaveChanges();
+            }
         }
     }
 }

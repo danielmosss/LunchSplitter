@@ -15,6 +15,7 @@ public class GroupInvite
     public int GroupId { get; set; }
     
     [Required]
+    [Range(1, int.MaxValue, ErrorMessage = "must be greater than zero")]
     [Column("usage")]
     public int usage { get; set; }
     

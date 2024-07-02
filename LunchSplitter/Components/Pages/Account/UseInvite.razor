@@ -1,33 +1,41 @@
 ﻿@page "/invite/{inviteId}"
 @using System.Security.Claims
+@using LunchSplitter.Domain.Entity
 @using LunchSplitter.Services
+@rendermode InteractiveServer
 @inject GroupService groupService
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider authenticationStateProvider
 
+<h1>
+    <Spinner />
+    Using invite...
+    You will be redirected shortly.
+</h1>
+
 @code {
-    [Parameter]
-    public string inviteId { get; set; }
+    [Parameter] public string inviteId { get; set; }
 
     protected override void OnInitialized()
     {
+        var invite = new GroupInvite();
         try
         {
-            var invite = groupService.GetInvite(Guid.Parse(inviteId));
-            if (invite == null)
-            {
-                //navigationManager.NavigateTo("/error", true);
-            }
-            else
-            {
-                groupService.UseInvite(invite.Id, GetUserId());
-                //navigationManager.NavigateTo("/");
-            }
+            invite = groupService.GetInvite(Guid.Parse(inviteId));
         }
-        catch (Exception ex)
+        catch
         {
-            Console.WriteLine($"Error initializing component: {ex.Message}");
-            navigationManager.NavigateTo("/error");
+            invite = null;
+        }
+
+        if (invite != null)
+        {
+            groupService.UseInvite(invite.Id, GetUserId());
+            Task.Delay(10000).ContinueWith(t => navigationManager.NavigateTo($"/group/{invite.GroupId}"));
+        }
+        else
+        {
+            Task.Delay(10000).ContinueWith(t => navigationManager.NavigateTo("/error"));
         }
     }
 
@@ -37,4 +45,5 @@
         var user = authState.User;
         return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
+
 }
