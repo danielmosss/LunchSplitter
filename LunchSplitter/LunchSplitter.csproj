@@ -24,4 +24,10 @@
       <_ContentIncludedByDefault Remove="Components\Pages\Popups\Popup.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Components\Pages\GroupPage.razor.css">
+        <DependentUpon>GroupPage.razor</DependentUpon>
+      </None>
+    </ItemGroup>
+
 </Project>

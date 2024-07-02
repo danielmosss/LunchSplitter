@@ -6,6 +6,9 @@ namespace LunchSplitter.Domain.Entity;
 public class GroupUser
 {
     [Key]
+    [Column("group_user_id")]
+    public int GroupUserId { get; set; }
+    
     [Column("group_id")]
     public int GroupId { get; set; }
     
@@ -14,6 +17,9 @@ public class GroupUser
     
     [Column("is_admin")]
     public bool IsAdmin { get; set; }
+    
+    [Column("share")]
+    public int Share { get; set; }
     
     [ForeignKey("GroupId")]
     public Group Group { get; set; }

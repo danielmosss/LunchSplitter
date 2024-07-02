@@ -24,9 +24,6 @@ public class DatabaseContext : DbContext
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<TransactionShare> TransactionShares { get; set; }
     
-    public DbSet<GroupSharepreset> GroupSharepresets { get; set; }
-    public DbSet<Sharepreset> Sharepresets { get; set; }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

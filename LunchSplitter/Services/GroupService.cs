@@ -49,11 +49,11 @@ public class GroupService
             context.Groups.Add(group);
             await context.SaveChangesAsync();
 
-            AddUserToGroup(group, userId);
+            AddUserToGroup(group, userId, true);
         }
     }
 
-    public async void AddUserToGroup(Group group, int userId)
+    public async void AddUserToGroup(Group group, int userId, bool isAdmin = false)
     {
         using (var context = _dbContextFactory.CreateDbContext())
         {
@@ -69,93 +69,12 @@ public class GroupService
                 Group = dbGroup,
                 User = user
             };
+            if (isAdmin)
+            {
+                groupUser.IsAdmin = true;
+            }
             dbGroup.GroupUsers.Add(groupUser);
             await context.SaveChangesAsync();
-        }
-    }
-
-    public void AddTransactionToGroup(int groupId, Transaction transaction, GroupSharepreset groupSharepreset)
-    {
-        using (var context = _dbContextFactory.CreateDbContext())
-        {
-            Group group = context.Groups.Find(groupId);
-            if (group.Transactions == null)
-            {
-                group.Transactions = new List<Transaction>();
-            }
-
-            group.Transactions.Add(transaction);
-            context.SaveChanges();
-
-            ShareTransaction(groupSharepreset, transaction);
-        }
-    }
-
-    private void ShareTransaction(GroupSharepreset groupSharepreset, Transaction transaction)
-    {
-        using (var context = _dbContextFactory.CreateDbContext())
-        {
-            GroupSharepreset dbGroupSharepreset = context.GroupSharepresets.Find(groupSharepreset.id);
-            List<Sharepreset> sharepreset =
-                context.Sharepresets.Where(sp => sp.GroupSharepresetId == dbGroupSharepreset.id).ToList();
-            Transaction dbTransaction = context.Transactions.Find(transaction.Id);
-            TransactionShare transactionShare =
-                context.TransactionShares.FirstOrDefault(ts => ts.TransactionId == dbTransaction.Id);
-            // check if there are no transaction shares for this transaction
-            if (transactionShare == null)
-            {
-                var totalshare = sharepreset.Sum(sp => sp.share);
-                foreach (GroupUser groupUser in dbGroupSharepreset.Group.GroupUsers)
-                {
-                    var userShare = sharepreset.Where(x => x.UserId == groupUser.User.Id).FirstOrDefault();
-                    var Amount = dbTransaction.Amount * userShare.share / totalshare;
-                    TransactionShare newTransactionShare = new TransactionShare
-                    {
-                        Transaction = dbTransaction,
-                        UserId = groupUser.User.Id,
-                        UserName = groupUser.User.Name,
-                        Amount = Amount
-                    };
-                    context.TransactionShares.Add(newTransactionShare);
-                }
-
-                context.SaveChanges();
-            }
-        }
-    }
-    
-    public List<GroupSharepreset> GetGroupSharePresets(int groupid)
-    {
-        using (var context = _dbContextFactory.CreateDbContext())
-        {
-            List<GroupSharepreset> groupSharepreset = context.GroupSharepresets.Where(x => x.GroupId == groupid).ToList();
-            if (groupSharepreset == null)
-            {
-                return new List<GroupSharepreset>();
-            }
-            return groupSharepreset;
-        }
-    }
-
-    public List<Sharepreset> GetSharePreset(int sharePresetId)
-    {
-        using (var context = _dbContextFactory.CreateDbContext())
-        {
-            List<Sharepreset> sharepresets = context.Sharepresets.Where(sp => sp.GroupSharepresetId == sharePresetId).ToList();
-            if (sharepresets == null)
-            {
-                return new List<Sharepreset>();
-            }
-            return sharepresets;
-        }
-    }
-
-    public void CreatePreset(GroupSharepreset newPreset)
-    {
-        using (var context = _dbContextFactory.CreateDbContext())
-        {
-            context.GroupSharepresets.Add(newPreset);
-            context.SaveChanges();
         }
     }
 }

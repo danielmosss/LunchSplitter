@@ -1,8 +1,11 @@
 ﻿@page "/group/{groupId}"
+@using System.Security.Claims
 @using System.Text.RegularExpressions
+@using LunchSplitter.Domain.Entity
 @rendermode InteractiveServer
 @using LunchSplitter.Services
 @using Group = LunchSplitter.Domain.Entity.Group
+@inject AuthenticationStateProvider authenticationStateProvider
 @attribute [Authorize]
 @inject NavigationManager navigationManager
 @inject GroupService groupService
@@ -11,39 +14,44 @@
 
 <h3>Group, @group.Name</h3>
 
-<div class="groupActions">
-    <button class="btn btn-primary">
-        <span class="bi bi-plus-square"></span>
-        Add Transaction
-    </button>
-
-    <button class="btn btn-primary">
-        <span class="bi bi-plus-square"></span>
-        Add Moneytransfer
-    </button>
-
-    <button class="btn btn-primary" @onclick="() => DeleteGroup()">
-        <span class="bi bi-trash"></span>
-        Delete Group
-    </button>
-</div>
+@if(IsGroupAdmin)
+{
+    <div class="groupActions">
+        <button class="btn btn-primary" @onclick="() => DeleteGroup()">
+            <span class="bi bi-trash"></span>
+            Delete Group
+        </button>
+    </div>
+}
 
 <div class="users">
     <h4>Users</h4>
-    <ul>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>IsAdmin</th>
+            <th>Share</th>
+        </tr>
         @foreach (var groupUser in group.GroupUsers)
         {
-            <li>@groupUser.User.Name</li>
+            <tr>
+                <td>@groupUser.User.Name</td>
+                <td>@groupUser.IsAdmin</td>
+                <td>
+                    @groupUser.Share
+                    (@GetSharePercentage(groupUser.Share, group)%)
+                </td>
+            </tr>
         }
-    </ul>
+    </table>
 </div>
-
 
 @code {
     [Parameter] public string groupId { get; set; }
     [CascadingParameter] public HttpContext? HttpContext { get; set; }
 
     public Group group { get; set; }
+    public bool IsGroupAdmin { get; set; }
 
     protected override void OnInitialized()
     {
@@ -54,6 +62,7 @@
             {
                 navigationManager.NavigateTo("/error");
             }
+            IsGroupAdmin = UserGroupAdmin().Result;
         }
         catch (Exception ex)
         {
@@ -77,5 +86,18 @@
             // Consider providing user feedback here as well
         }
     }
+    
+    private double GetSharePercentage(double share, Group group)
+    {
+        return Math.Round(share / group.GroupUsers.Sum(gu => gu.Share) * 100, 2);
+    }
 
+    private async Task<bool> UserGroupAdmin()
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+        var groupUser = group.GroupUsers.FirstOrDefault(gu => gu.UserId == int.Parse(userId));
+        return groupUser != null && groupUser.IsAdmin;
+    }
 }

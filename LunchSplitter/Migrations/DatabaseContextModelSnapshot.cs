@@ -42,33 +42,15 @@ namespace LunchSplitter.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("LunchSplitter.Domain.Entity.GroupSharepreset", b =>
-                {
-                    b.Property<int>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("id");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
-
-                    b.Property<int>("GroupId")
-                        .HasColumnType("int")
-                        .HasColumnName("group_id");
-
-                    b.Property<string>("name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("name");
-
-                    b.HasKey("id");
-
-                    b.HasIndex("GroupId");
-
-                    b.ToTable("GroupSharepresets");
-                });
-
             modelBuilder.Entity("LunchSplitter.Domain.Entity.GroupUser", b =>
                 {
+                    b.Property<int>("GroupUserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("group_user_id");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GroupUserId"));
+
                     b.Property<int>("GroupId")
                         .HasColumnType("int")
                         .HasColumnName("group_id");
@@ -77,11 +59,17 @@ namespace LunchSplitter.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_admin");
 
+                    b.Property<int>("Share")
+                        .HasColumnType("int")
+                        .HasColumnName("share");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int")
                         .HasColumnName("user_id");
 
-                    b.HasKey("GroupId");
+                    b.HasKey("GroupUserId");
+
+                    b.HasIndex("GroupId");
 
                     b.HasIndex("UserId");
 
@@ -110,27 +98,6 @@ namespace LunchSplitter.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Permissions");
-                });
-
-            modelBuilder.Entity("LunchSplitter.Domain.Entity.Sharepreset", b =>
-                {
-                    b.Property<int>("GroupSharepresetId")
-                        .HasColumnType("int")
-                        .HasColumnName("group_sharepreset_id");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int")
-                        .HasColumnName("user_id");
-
-                    b.Property<int>("share")
-                        .HasColumnType("int")
-                        .HasColumnName("share");
-
-                    b.HasIndex("GroupSharepresetId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Sharepresets");
                 });
 
             modelBuilder.Entity("LunchSplitter.Domain.Entity.Transaction", b =>
@@ -216,7 +183,7 @@ namespace LunchSplitter.Migrations
                             Id = 1,
                             Email = "admin@example.com",
                             Name = "SystemAdmin",
-                            Password = "Nd29F0/KD5hHPWWlayALqEPTzf6LcTdxYF2cJ7+YZkA=",
+                            Password = "uLmA+GQ4Z3jlUYQBsZVcXgiT7+7+s306cGquTx80tkE=",
                             Salt = "System.Byte[]"
                         });
                 });
@@ -264,17 +231,6 @@ namespace LunchSplitter.Migrations
                     b.ToTable("TransactionShares");
                 });
 
-            modelBuilder.Entity("LunchSplitter.Domain.Entity.GroupSharepreset", b =>
-                {
-                    b.HasOne("LunchSplitter.Domain.Entity.Group", "Group")
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Group");
-                });
-
             modelBuilder.Entity("LunchSplitter.Domain.Entity.GroupUser", b =>
                 {
                     b.HasOne("LunchSplitter.Domain.Entity.Group", "Group")
@@ -290,25 +246,6 @@ namespace LunchSplitter.Migrations
                         .IsRequired();
 
                     b.Navigation("Group");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("LunchSplitter.Domain.Entity.Sharepreset", b =>
-                {
-                    b.HasOne("LunchSplitter.Domain.Entity.GroupSharepreset", "GroupSharepreset")
-                        .WithMany()
-                        .HasForeignKey("GroupSharepresetId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LunchSplitter.Domain.Entity.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("GroupSharepreset");
 
                     b.Navigation("User");
                 });
