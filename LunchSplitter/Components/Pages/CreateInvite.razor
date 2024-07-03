@@ -8,9 +8,8 @@
     <h3>CreateInvite</h3>
     <table>
         <tr>
-            <th>InviteId</th>
+            <th>Invite</th>
             <th>Usages</th>
-            <th>Group</th>
         </tr>
         @foreach (var invite in getInvites())
         {
@@ -19,48 +18,49 @@
                     @GetInviteLink(@invite.Id)
                 </td>
                 <td>@invite.usage</td>
-                <td>@invite.GroupId</td>
             </tr>
         }
     </table>
-    
+
     <div class="divider"></div>
-    
+
     <h5>Create new invite</h5>
     <EditForm Model="@newInvite" OnValidSubmit="HandleValidSubmit">
-    <DataAnnotationsValidator/>
-    <div class="form-group">
-        <label for="Usages">Usages</label>
-        <InputNumber id="Usages" class="form-control" @bind-Value="newInvite.usage" />
-        <ValidationMessage For="@(() => newInvite.usage)" />
-    </div>
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary">Create Invite</button>
-    </div>
-</EditForm>
+        <DataAnnotationsValidator/>
+        <div class="form-group">
+            <div>
+                <label for="Usages">Usages</label>
+                <InputNumber id="Usages" class="form-control" @bind-Value="newInvite.usage"/>
+                <ValidationMessage For="@(() => newInvite.usage)"/>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Create Invite</button>
+        </div>
+    </EditForm>
 
 </div>
+
 @code {
-    [Parameter]
-    public int GroupId { get; set; }
-    
+    [Parameter] public int GroupId { get; set; }
+
     public GroupInvite newInvite { get; set; } = new GroupInvite();
-    
+
     private void HandleValidSubmit()
     {
         newInvite.GroupId = GroupId;
         groupService.CreateInvite(newInvite);
     }
-    
+
     private List<GroupInvite> getInvites()
     {
         return groupService.GetInvites(GroupId);
     }
-    
+
     public string GetInviteLink(Guid inviteId)
     {
         var host = navigationManager.BaseUri;
         var inviteLink = host + "invite/" + inviteId;
         return inviteLink;
     }
+
 }

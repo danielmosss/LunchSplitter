@@ -10,6 +10,7 @@
 @inject NavigationManager navigationManager
 @inject GroupService groupService
 @inject TransactionService transactionService
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Group</PageTitle>
 
@@ -29,31 +30,48 @@
 </div>
 
 <div class="GroupTopRow">
-    <div class="users">
+    <div class="users backgroundBlock">
         <h4>Users</h4>
         <table>
             <tr>
                 <th>User</th>
-                <th>IsAdmin</th>
                 <th>Share</th>
+                <th>Total Paid</th>
+                <th>Total Spent</th>
+                <th>Balance</th>
             </tr>
             @foreach (var groupUser in group.GroupUsers)
             {
                 <tr>
-                    <td>@groupUser.User.Name</td>
-                    <td>@groupUser.IsAdmin</td>
+                    <td>
+                        @if (groupUser.IsAdmin)
+                        {
+                            <strong>
+                                @groupUser.User.Name
+                            </strong>
+                        }
+                        else
+                        {
+                            @groupUser.User.Name
+                        }
+                    </td>
                     <td>
                         @groupUser.Share
                         (@GetSharePercentage(groupUser.Share, group)%)
                     </td>
+                    
+                    @{ var user = GetUserTotalAmount(groupUser.UserId); }
+                    <td>@user.TotalPaid (@user.TransactionsPaid TX)</td>
+                    <td>@user.TotalSpent (@user.TransactionsSpent TX)</td>
+                    <td>@(@user.TotalPaid - @user.TotalSpent)</td>
                 </tr>
             }
         </table>
     </div>
 
 
-    <div class="newTransaction">
-        <h4>Add New Transaction</h4>
+    <div class="newTransaction backgroundBlock">
+        <h4>Add new transaction</h4>
         <EditForm Model="@newTransaction" OnValidSubmit="HandleValidSubmit">
             <DataAnnotationsValidator/>
 
@@ -77,59 +95,27 @@
                 <InputSelect id="shareOption" class="form-control" @bind-Value="shareOption">
                     <option value="default">Group Shares</option>
                     <option value="equal">Equally</option>
-                    @* <option value="custom">Custom</option> *@
                 </InputSelect>
             </div>
-            @* @if (shareOption == "custom") *@
-            @* { *@
-            @*     <div class="form-group"> *@
-            @*         @foreach (var groupUser in group.GroupUsers) *@
-            @*         { *@
-            @*             <label>@groupUser.User.Name</label> *@
-            @*             <InputNumber class="form-control" @bind-Value="customShares[groupUser.UserId]"/> *@
-            @*         } *@
-            @*     </div> *@
-            @* } *@
             <button type="submit" class="btn btn-primary">Add Transaction</button>
         </EditForm>
     </div>
-
-    <div>
-        <table>
-            <thead>
-            <tr>
-                <th>User</th>
-                <th>Paid</th>
-                <th>Expenses</th>
-                <th>Balance</th>
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var user in userTotalAmounts)
-            {
-                <tr>
-                    <td>@user.GroupUser.User.Name</td>
-                    <td>@user.TotalPaid (@user.TransactionsPaid Transactions)</td>
-                    <td>@user.TotalSpent (@user.TransactionsSpent Transactions)</td>
-                    <td>@(@user.TotalPaid - @user.TotalSpent)</td>
-                </tr>
-            }
-            </tbody>
-        </table>
-    </div>
-
+    
     @if (IsGroupAdmin)
     {
-        <CreateInvite GroupId="@group.Id"></CreateInvite>
+        <div class="invites backgroundBlock">
+            <CreateInvite GroupId="@group.Id"></CreateInvite>
+        </div>
     }
 </div>
-
-<Transactions GroupId="@group.Id" IsGroupAdmin="IsGroupAdmin"></Transactions>
+<div class="backgroundBlock">
+    <Transactions GroupId="@group.Id" IsGroupAdmin="IsGroupAdmin"></Transactions>
+</div>
 
 @code {
     [Parameter] public string groupId { get; set; }
     [CascadingParameter] public HttpContext? HttpContext { get; set; }
-
+    
     public Group group { get; set; }
     public bool IsGroupAdmin { get; set; }
 
@@ -166,6 +152,11 @@
         {
             customShares[groupUser.UserId] = 0;
         }
+    }
+    
+    private GroupService.UserTotalAmount GetUserTotalAmount(int userId)
+    {
+        return userTotalAmounts.FirstOrDefault(x => x.GroupUser.UserId == userId);
     }
 
     private void DeleteGroup()
@@ -229,7 +220,7 @@
                 var totalShares = group.GroupUsers.Sum(x => x.Share);
                 foreach (var groupUser in group.GroupUsers)
                 {
-                    var Amount = newTransaction.Amount * groupUser.Share / totalShares; 
+                    var Amount = newTransaction.Amount * groupUser.Share / totalShares;
                     customShares[groupUser.UserId] = Amount;
                 }
             }
@@ -247,3 +238,4 @@
         }
     }
 }
+

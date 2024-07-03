@@ -19,19 +19,9 @@
         <div class="groups">
             @foreach (var group in groupService.GetGroupsByUserId(GetUserId()))
             {
-            <div class="group">
-                <div class="groupinfo">
-                    <i class="bi bi-card-checklist h1"></i>
-                    <div>
-                        <h3>@group.Name</h3>
-                        <p>@group.GroupUsers.Count users</p>
-                    </div>
-                </div>
-                <button class="btn btn-primary"
-                        @onclick="() => NavigateToGroup(group.Id)">
-                    Go to group
+                <button class="btn btn-primary buttonGroup" @onclick="() => NavigateToGroup(group.Id)">
+                    Go to @group.Name
                 </button>
-            </div>
             }
             <div class="group">
                 <EditForm Model="NewGroup" OnValidSubmit="HandleSubmit" FormName="CreateGroup" Context="another_name">
@@ -84,7 +74,7 @@
     {
         navigationManager.NavigateTo($"/group/{groupId}");
     }
-    
+
     private async void HandleSubmit()
     {
         groupService.AddGroup(NewGroup, GetUserId());
