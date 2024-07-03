@@ -32,7 +32,7 @@ builder.Services.AddDbContextFactory<DatabaseContext>(optionsBuilder =>
 
 var app = builder.Build();
 
-// Migrate the database
+// Initialize the database
 using (var scope = app.Services.CreateScope())
 {
     var dbContextFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<DatabaseContext>>();
@@ -40,7 +40,7 @@ using (var scope = app.Services.CreateScope())
     {
         try
         {
-            dbContext.Database.Migrate();
+            dbContext.Database.EnsureCreated();
         }
         catch (Exception e)
         {
