@@ -10,7 +10,7 @@
 <PageTitle>Home</PageTitle>
 
 <div>
-    <h2>Welcome to LunchSplitter, @userName</h2>
+    <h2>Welcome to LunchSplitter</h2>
     <p>Split your lunch bill with your friends</p>
 </div>
 
@@ -50,17 +50,10 @@
 {
     [SupplyParameterFromForm] public Group NewGroup { get; set; }
     [CascadingParameter] public HttpContext? HttpContext { get; set; }
-
-    private string userName;
-
+    
     protected override void OnInitialized()
     {
         NewGroup ??= new();
-        userName = "Guest";
-        if (HttpContext?.User.Identity?.IsAuthenticated == true)
-        {
-            userName = HttpContext.User.Identity.Name;
-        }
     }
 
     private int GetUserId()
