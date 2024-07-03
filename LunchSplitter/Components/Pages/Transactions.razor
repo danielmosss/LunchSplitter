@@ -26,7 +26,10 @@ else
                 <th>Amount</th>
                 <th>Date</th>
                 <th>Shared</th>
-                <th>Delete</th>
+                @if (IsGroupAdmin)
+                {
+                    <th>Delete</th>
+                }
             </tr>
             </thead>
             <tbody>
@@ -43,14 +46,15 @@ else
                             <span>(@shared.UserName -€@shared.Amount)</span>
                         }
                     </td>
-                    <td>
-                        @if (IsGroupAdmin)
-                        {
+                    @if (IsGroupAdmin)
+                    {
+                        <td>
+
                             <button class="btn btn-danger" @onclick="() => DeleteTransaction(tx.Id)">
                                 <span class="bi bi-trash"></span>
                             </button>
-                        }
-                    </td>
+                        </td>
+                    }
                 </tr>
             }
             </tbody>
