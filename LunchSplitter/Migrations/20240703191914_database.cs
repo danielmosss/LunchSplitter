@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LunchSplitter.Migrations
 {
     /// <inheritdoc />
-    public partial class Database : Migration
+    public partial class database : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -185,7 +185,7 @@ namespace LunchSplitter.Migrations
             migrationBuilder.InsertData(
                 table: "Users",
                 columns: new[] { "id", "email", "name", "password", "salt" },
-                values: new object[] { 1, "admin@example.com", "SystemAdmin", "UCV6fNSmRMhWLiGfMC5L+VeX2qEdw+Rxm65wOSiqSeg=", "usrIE7iR2QtKgIWwfyOiIw==" });
+                values: new object[] { 1, "admin@example.com", "SystemAdmin", "sFqG//VmTc+cIST3kB0Ef6BUxrme3dJTT8USsbhDPfQ=", "AHHl4FDNFVZHRQTt5NXxAA==" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_GroupInvites_group_id",

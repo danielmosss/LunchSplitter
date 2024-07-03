@@ -30,17 +30,15 @@ public class DatabaseContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        var hash = UserService.HashPassword("Admin@1234");
-
+        
         modelBuilder.Entity<User>().HasData(
             new User
             {
                 Id = 1,
                 Name = "SystemAdmin",
                 Email = "admin@example.com",
-                Password = hash.hashed,
-                Salt = hash.salt.ToString()
+                Password = "sFqG//VmTc+cIST3kB0Ef6BUxrme3dJTT8USsbhDPfQ=",
+                Salt = "AHHl4FDNFVZHRQTt5NXxAA=="
             });
         
         //create unique constraint on name 

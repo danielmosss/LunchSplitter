@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LunchSplitter.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20240702200204_Database")]
-    partial class Database
+    [Migration("20240703191914_database")]
+    partial class database
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -208,8 +208,8 @@ namespace LunchSplitter.Migrations
                             Id = 1,
                             Email = "admin@example.com",
                             Name = "SystemAdmin",
-                            Password = "UCV6fNSmRMhWLiGfMC5L+VeX2qEdw+Rxm65wOSiqSeg=",
-                            Salt = "usrIE7iR2QtKgIWwfyOiIw=="
+                            Password = "sFqG//VmTc+cIST3kB0Ef6BUxrme3dJTT8USsbhDPfQ=",
+                            Salt = "AHHl4FDNFVZHRQTt5NXxAA=="
                         });
                 });
 
