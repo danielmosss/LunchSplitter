@@ -69,27 +69,36 @@
         </table>
     </div>
 
-    <div class="updateShare backgroundBlock">
-        <h4>Update Share</h4>
-        <EditForm Model="@selectedUser" OnValidSubmit="UpdateShare">
-            <DataAnnotationsValidator/>
-            <div class="form-group">
-                <label for="userSelect">Select User</label>
-                <InputSelect id="userSelect" class="form-control" @bind-Value="selectedUser.UserId">
-                    @foreach (var groupUser in group.GroupUsers)
-                    {
+    @if (IsGroupAdmin)
+    {
+        <div class="updateShare backgroundBlock">
+            <h4>Update Share</h4>
+            <EditForm Model="@selectedUser" OnValidSubmit="UpdateShare">
+                <DataAnnotationsValidator/>
+                <div class="form-group">
+                    <label for="userSelect">Select User</label>
+                    <InputSelect id="userSelect" class="form-control" @bind-Value="selectedUser.UserId" @oninput="UpdateSelectedUser">
+                        @foreach (var groupUser in group.GroupUsers)
+                        {
                         <option value="@groupUser.UserId">@groupUser.User.Name</option>
-                    }
-                </InputSelect>
-            </div>
-            <div class="form-group">
-                <label for="newShare">New Share</label>
-                <InputNumber id="newShare" class="form-control" @bind-Value="selectedUser.Share"/>
-                <ValidationMessage For="@(() => selectedUser.Share)"/>
-            </div>
-            <button type="submit" class="btn btn-primary">Update Share</button>
-        </EditForm>
-    </div>
+                        }
+                    </InputSelect>
+                </div>
+                <div class="form-group">
+                    <label for="newShare">New Share</label>
+                    <InputNumber id="newShare" class="form-control" @bind-Value="selectedUser.Share"/>
+                    <ValidationMessage For="@(() => selectedUser.Share)"/>
+                </div>
+
+                <div class="form-group form-check">
+                    <InputCheckbox id="isAdmin" class="form-check-input" @bind-Value="selectedUser.IsAdmin"/>
+                    <label class="form-check-label" for="isAdmin">Is Admin</label>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Update Share</button>
+            </EditForm>
+        </div>
+    }
 
     <div class="newTransaction backgroundBlock">
         <h4>Add new transaction</h4>
@@ -261,6 +270,14 @@
         }
     }
 
+    private void UpdateSelectedUser(ChangeEventArgs e)
+    {
+        int selectedUserId = int.Parse(e.Value.ToString());
+        var groupUser = group.GroupUsers.FirstOrDefault(gu => gu.UserId == selectedUserId);
+        selectedUser.Share = groupUser.Share;
+        selectedUser.IsAdmin = groupUser.IsAdmin;
+    }
+    
     private async Task UpdateShare()
     {
         try
@@ -269,6 +286,7 @@
             if (groupUser != null)
             {
                 groupUser.Share = selectedUser.Share;
+                groupUser.IsAdmin = selectedUser.IsAdmin;
                 groupService.UpdateGroupUser(groupUser);
                 navigationManager.NavigateTo($"/group/{group.Id}", true);
             }
@@ -278,4 +296,5 @@
             Console.WriteLine($"Error updating share: {ex.Message}");
         }
     }
+
 }
