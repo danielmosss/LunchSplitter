@@ -33,11 +33,11 @@
         if (invite != null)
         {
             groupService.UseInvite(invite.Id, GetUserId());
-            Task.Delay(10000).ContinueWith(t => navigationManager.NavigateTo($"/group/{invite.GroupId}"));
+            Task.Delay(5000).ContinueWith(t => navigationManager.NavigateTo($"/group/{invite.GroupId}"));
         }
         else
         {
-            Task.Delay(10000).ContinueWith(t => navigationManager.NavigateTo("/error"));
+            Task.Delay(5000).ContinueWith(t => navigationManager.NavigateTo("/error"));
         }
     }
 
