@@ -199,4 +199,13 @@ public class GroupService
             }
         }
     }
+    
+    public void UpdateGroupUser(GroupUser groupUser)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            context.GroupUsers.Update(groupUser);
+            context.SaveChanges();
+        }
+    }
 }

@@ -59,7 +59,7 @@
                         @groupUser.Share
                         (@GetSharePercentage(groupUser.Share, group)%)
                     </td>
-                    
+
                     @{ var user = GetUserTotalAmount(groupUser.UserId); }
                     <td>@user.TotalPaid (@user.TransactionsPaid TX)</td>
                     <td>@user.TotalSpent (@user.TransactionsSpent TX)</td>
@@ -69,6 +69,27 @@
         </table>
     </div>
 
+    <div class="updateShare backgroundBlock">
+        <h4>Update Share</h4>
+        <EditForm Model="@selectedUser" OnValidSubmit="UpdateShare">
+            <DataAnnotationsValidator/>
+            <div class="form-group">
+                <label for="userSelect">Select User</label>
+                <InputSelect id="userSelect" class="form-control" @bind-Value="selectedUser.UserId">
+                    @foreach (var groupUser in group.GroupUsers)
+                    {
+                        <option value="@groupUser.UserId">@groupUser.User.Name</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="form-group">
+                <label for="newShare">New Share</label>
+                <InputNumber id="newShare" class="form-control" @bind-Value="selectedUser.Share"/>
+                <ValidationMessage For="@(() => selectedUser.Share)"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Share</button>
+        </EditForm>
+    </div>
 
     <div class="newTransaction backgroundBlock">
         <h4>Add new transaction</h4>
@@ -100,7 +121,7 @@
             <button type="submit" class="btn btn-primary">Add Transaction</button>
         </EditForm>
     </div>
-    
+
     @if (IsGroupAdmin)
     {
         <div class="invites backgroundBlock">
@@ -115,9 +136,10 @@
 @code {
     [Parameter] public string groupId { get; set; }
     [CascadingParameter] public HttpContext? HttpContext { get; set; }
-    
+
     public Group group { get; set; }
     public bool IsGroupAdmin { get; set; }
+    public GroupUser selectedUser { get; set; }
 
     [SupplyParameterFromForm] public Transaction newTransaction { get; set; }
     private string shareOption = "default";
@@ -126,7 +148,8 @@
 
     protected override void OnInitialized()
     {
-        newTransaction ??= new Transaction { Date = DateTime.Now };
+        newTransaction = new Transaction { Date = DateTime.Now };
+        selectedUser = new GroupUser();
         try
         {
             group = groupService.GetGroupById(int.Parse(groupId));
@@ -153,7 +176,7 @@
             customShares[groupUser.UserId] = 0;
         }
     }
-    
+
     private GroupService.UserTotalAmount GetUserTotalAmount(int userId)
     {
         return userTotalAmounts.FirstOrDefault(x => x.GroupUser.UserId == userId);
@@ -237,5 +260,22 @@
             Console.WriteLine($"Error adding transaction: {ex.Message}");
         }
     }
-}
 
+    private async Task UpdateShare()
+    {
+        try
+        {
+            var groupUser = group.GroupUsers.FirstOrDefault(gu => gu.UserId == selectedUser.UserId);
+            if (groupUser != null)
+            {
+                groupUser.Share = selectedUser.Share;
+                groupService.UpdateGroupUser(groupUser);
+                navigationManager.NavigateTo($"/group/{group.Id}", true);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error updating share: {ex.Message}");
+        }
+    }
+}
