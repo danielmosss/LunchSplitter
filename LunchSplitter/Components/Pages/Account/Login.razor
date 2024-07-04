@@ -1,6 +1,5 @@
 ﻿@page "/login"
 @using System.Security.Claims
-@using LunchSplitter.Data
 @using LunchSplitter.Models.ViewModels
 @using LunchSplitter.Services
 @using Microsoft.AspNetCore.Authentication
@@ -27,10 +26,10 @@
             <ValidationMessage For="@(() => Model.Password)" />
         </div>  
         
-        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
         {
             <div class="alert alert-danger" role="alert">
-                @errorMessage
+                @_errorMessage
             </div>
         }
         <button type="submit" class="btn btn-primary">Login</button>
@@ -38,31 +37,24 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    public HttpContext? HttpContext { get; set; }
+    [CascadingParameter] public HttpContext HttpContext { get; set; }
     
     [SupplyParameterFromForm]
     public LoginViewModel Model { get; set; }
 
-    private string? errorMessage;
+    private string? _errorMessage;
 
     protected override void OnInitialized()
     {
         Model ??= new();
     }
 
-    private void signup()
-    {
-        NavigationManager.NavigateTo("/signup");
-    }
-    
-    
     private async Task Authenicate()
     {
         var user = userService.GetUserByUsername(Model.Username);
         if (user == null || UserService.CompareHash(Model.Password, user.Password, user.Salt) == false)
         {
-            errorMessage = "Invalid username or password";
+            _errorMessage = "Invalid username or password";
             return;
         }
         
@@ -76,6 +68,6 @@
         var principal = new ClaimsPrincipal(identity);
         await HttpContext.SignInAsync(principal);
         
-        NavigationManager.NavigateTo("/");
+        NavigationManager.NavigateTo("/login", true);
     }
 }

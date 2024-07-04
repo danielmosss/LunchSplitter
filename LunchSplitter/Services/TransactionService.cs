@@ -48,7 +48,7 @@ public class TransactionService
         }
     }
 
-    public async Task<List<Transaction>> GetTransactions(int groupId)
+    public async Task<List<Transaction>> GetTransactions(int groupId, int count = 25)
     {
         using (var context = _dbContextFactory.CreateDbContext())
         {
@@ -56,7 +56,7 @@ public class TransactionService
                 .Include(x => x.User)
                 .Where(t => t.GroupId == groupId)
                 .OrderByDescending(t => t.Date)
-                .Take(25)
+                .Take(count)
                 .ToList();
             return transactions;
         }

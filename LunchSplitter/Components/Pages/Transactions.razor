@@ -7,7 +7,19 @@
 
 <PageTitle>Transactions</PageTitle>
 
-<h3>Last 25 transactions</h3>
+<div class="Title">
+    <h3>Last @TxCount transactions</h3>
+    <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            Last @TxCount transactions
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <a class="dropdown-item" onclick="@(() => GetTransactions(25))">25 transactions</a>
+            <a class="dropdown-item" onclick="@(() => GetTransactions(50))">50 transactions</a>
+            <a class="dropdown-item" onclick="@(() => GetTransactions(100))">100 transactions</a>
+        </div>
+    </div>
+</div>
 
 @if (transactions == null)
 {
@@ -17,48 +29,54 @@
 }
 else
 {
-    <div class="transactions">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>User</th>
-                <th>Description</th>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Shared</th>
-                @if (IsGroupAdmin)
-                {
-                    <th>Delete</th>
-                }
-            </tr>
-            </thead>
-            <tbody>
-            @foreach (var tx in transactions)
-            {
-                <tr>
-                    <td>@tx.User.Name</td>
-                    <td>@tx.Description</td>
-                    <td>@tx.Amount</td>
-                    <td>@tx.Date</td>
-                    <td class="sharedTable">
-                        @foreach (var shared in @transactionService.GetTransactionShares(@tx.Id))
-                        {
-                            <span>(@shared.UserName -€@shared.Amount)</span>
-                        }
-                    </td>
-                    @if (IsGroupAdmin)
-                    {
-                        <td>
+    <div class="accordion" id="accordion">
 
-                            <button class="btn btn-danger" @onclick="() => DeleteTransaction(tx.Id)">
-                                <span class="bi bi-trash"></span>
-                            </button>
-                        </td>
-                    }
-                </tr>
-            }
-            </tbody>
-        </table>
+        @foreach (var tx in transactions)
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading-@tx.Id">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-@tx.Id" aria-expanded="false" aria-controls="collapse-@tx.Id">
+                        <div>
+                            <h4 style="margin-bottom: 0">@tx.Description</h4>
+                            <strong>@tx.User.Name</strong> paid €@tx.Amount <br/>
+                            @GetDutchDate(tx.Date) (@GetDaysAgo(tx.Date))
+                        </div>
+                    </button>
+                </h2>
+                <div id="collapse-@tx.Id" class="accordion-collapse collapse" aria-labelledby="heading-@tx.Id" data-bs-parent="#accordion">
+                    <div class="accordion-body">
+                        <strong>
+                            Date: @GetDutchDate(tx.Date) <br/>
+                            Shared with:
+                        </strong>
+                        <br/>
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Amount</th>
+                                <th>Percentage</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var shared in @transactionService.GetTransactionShares(tx.Id))
+                            {
+                                <tr>
+                                    <td>@shared.UserName</td>
+                                    <td>@shared.Amount</td>
+                                    <td>@calculatePercentage(tx.Amount, shared.Amount)%</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                        @if (IsGroupAdmin)
+                        {
+                            <button class="btn btn-danger" @onclick="@(() => DeleteTransaction(tx.Id))">Delete</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 }
 
@@ -68,16 +86,47 @@ else
     [Parameter] public bool IsGroupAdmin { get; set; }
 
     private List<Transaction>? transactions;
+    private bool isPopupVisible = false;
+    private int TxCount = 25;
 
     protected override async Task OnInitializedAsync()
     {
         transactions = await transactionService.GetTransactions(GroupId);
+        TxCount = transactions.Count;
     }
 
     private void DeleteTransaction(int transactionId)
     {
         transactionService.DeleteTransaction(transactionId);
         transactions = transactions.Where(tx => tx.Id != transactionId).ToList();
+        TxCount = transactions.Count;
+    }
+
+    private decimal calculatePercentage(decimal total, decimal shared)
+    {
+        return Math.Round((shared / total) * 100, 2);
+    }
+
+    private string GetDutchDate(DateTime date)
+    {
+        return date.ToString("dddd d MMMM yyyy");
+    }
+
+    private string GetDaysAgo(DateTime date)
+    {
+        var daysAgo = DateTime.Now - date;
+        return daysAgo.Days switch
+        {
+            0 => "Today",
+            1 => "Yesterday",
+            _ => $"{daysAgo.Days} days ago"
+        };
+    }
+
+    private async void GetTransactions(int count)
+    {
+        transactions = await transactionService.GetTransactions(GroupId, count);
+        TxCount = transactions.Count;
     }
 
 }
