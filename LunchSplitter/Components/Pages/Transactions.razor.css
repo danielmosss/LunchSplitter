@@ -1,3 +1,37 @@
 ﻿.transactions{
     overflow-x: scroll;
 }
+
+.sharedWith{
+    display: flex;
+    flex-direction: column;
+}
+
+table {
+    border-collapse: collapse;
+}
+table th {
+    padding: 0 2px;
+    border-width: 1px;
+}
+
+table td {
+    padding: 0 2px;
+    border-width: 1px;
+}
+table thead td {
+    background-color: #54585d;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid #54585d;
+}
+table tbody td {
+    color: #636363;
+    border: 1px solid #dddfe1;
+}
+table tbody tr {
+    background-color: #f9fafb;
+}
+table tbody tr:nth-child(odd) {
+    background-color: #ffffff;
+}
