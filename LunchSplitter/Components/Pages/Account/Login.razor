@@ -60,7 +60,6 @@
     private async Task Authenicate()
     {
         var user = userService.GetUserByUsername(Model.Username);
-        var hashedPassword = UserService.HashPassword(Model.Password, user.Salt);
         if (user == null || UserService.CompareHash(Model.Password, user.Password, user.Salt) == false)
         {
             errorMessage = "Invalid username or password";
