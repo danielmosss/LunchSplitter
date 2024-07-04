@@ -1,6 +1,4 @@
-﻿version: '3.4'
-
-services:
+﻿services:
   lunchsplitter:
     image: lunchsplitter:latest
     build:
@@ -8,25 +6,22 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-      - "8081:8081"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DbConnection=Server=sqlserver;Database=LunchSplitterDb;User=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+    env_file:
+      - .env
     depends_on:
       - sqlserver
     networks:
       - app-network
 
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      - SA_PASSWORD=YourStrong!Passw0rd
       - ACCEPT_EULA=Y
-    ports:
-      - "1433:1433"
+    env_file:
+      - .env
     networks:
       - app-network
-        
+
 networks:
     app-network:
         driver: bridge
