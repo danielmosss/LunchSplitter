@@ -6,7 +6,6 @@
 @using Microsoft.AspNetCore.Authentication.Cookies
 @inject UserService userService
 @inject NavigationManager NavigationManager
-@rendermode InteractiveServer
 
 
 <h3>Login</h3>
@@ -38,14 +37,18 @@
 </div>
 
 @code {
-    [CascadingParameter]
-    public HttpContext? HttpContext { get; set; }
+    [CascadingParameter] public HttpContext HttpContext { get; set; }
     
     [SupplyParameterFromForm]
-    public LoginViewModel Model { get; set; } = new();
+    public LoginViewModel Model { get; set; }
 
-    private string _errorMessage = string.Empty;
-    
+    private string? _errorMessage;
+
+    protected override void OnInitialized()
+    {
+        Model ??= new();
+    }
+
     private async Task Authenicate()
     {
         var user = userService.GetUserByUsername(Model.Username);

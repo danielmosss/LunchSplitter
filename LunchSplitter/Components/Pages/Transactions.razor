@@ -45,6 +45,9 @@ else
                         {
                             <span>(@shared.UserName -€@shared.Amount)</span>
                         }
+                        <button @onclick="ShowPopup">Show Popup</button>
+
+                        <Popup IsVisible="isPopupVisible" Message="Hello, this is a popup!" OnClose="HandlePopupClose"></Popup>
                     </td>
                     @if (IsGroupAdmin)
                     {
@@ -68,6 +71,7 @@ else
     [Parameter] public bool IsGroupAdmin { get; set; }
 
     private List<Transaction>? transactions;
+    private bool isPopupVisible = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -78,6 +82,16 @@ else
     {
         transactionService.DeleteTransaction(transactionId);
         transactions = transactions.Where(tx => tx.Id != transactionId).ToList();
+    }
+    
+    private void ShowPopup()
+    {
+        isPopupVisible = true;
+    }
+
+    private void HandlePopupClose(bool isVisible)
+    {
+        isPopupVisible = isVisible;
     }
 
 }
