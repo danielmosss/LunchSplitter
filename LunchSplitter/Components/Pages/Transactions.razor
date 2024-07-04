@@ -69,6 +69,10 @@ else
                             }
                             </tbody>
                         </table>
+                        @if (IsGroupAdmin)
+                        {
+                            <button class="btn btn-danger" @onclick="@(() => DeleteTransaction(tx.Id))">Delete</button>
+                        }
                     </div>
                 </div>
             </div>
