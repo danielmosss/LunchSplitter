@@ -7,8 +7,9 @@
 @using Microsoft.AspNetCore.Authentication.Cookies
 @inject UserService userService
 @inject NavigationManager NavigationManager
-<h3>login</h3>
 
+
+<h3>Login</h3>
 
 <div class="row">
     <EditForm Model="@Model" OnValidSubmit="Authenicate" FormName="LoginForm">
@@ -33,9 +34,7 @@
             </div>
         }
         <button type="submit" class="btn btn-primary">Login</button>
-        <button type="button" class="btn btn-primary" href="/signup">Signup</button>
     </EditForm>
-
 </div>
 
 @code {
@@ -43,9 +42,14 @@
     public HttpContext? HttpContext { get; set; }
     
     [SupplyParameterFromForm]
-    public LoginViewModel Model { get; set; } = new();
+    public LoginViewModel Model { get; set; }
 
     private string? errorMessage;
+
+    protected override void OnInitialized()
+    {
+        Model ??= new();
+    }
 
     private void signup()
     {
