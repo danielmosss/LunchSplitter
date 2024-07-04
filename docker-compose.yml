@@ -12,6 +12,7 @@
       - sqlserver
     networks:
       - app-network
+    restart: unless-stopped
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -21,6 +22,7 @@
       - .env
     networks:
       - app-network
+    restart: unless-stopped
 
 networks:
     app-network:
