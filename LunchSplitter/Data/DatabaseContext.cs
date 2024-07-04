@@ -31,16 +31,6 @@ public class DatabaseContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Entity<User>().HasData(
-            new User
-            {
-                Id = 1,
-                Name = "SystemAdmin",
-                Email = "admin@example.com",
-                Password = "sFqG//VmTc+cIST3kB0Ef6BUxrme3dJTT8USsbhDPfQ=",
-                Salt = "AHHl4FDNFVZHRQTt5NXxAA=="
-            });
-        
         //create unique constraint on name 
         modelBuilder.Entity<User>()
             .HasIndex(u => u.Name)
