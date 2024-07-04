@@ -1,6 +1,5 @@
 ﻿services:
   lunchsplitter:
-    image: lunchsplitter:latest
     build:
       context: .
       dockerfile: Dockerfile
