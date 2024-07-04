@@ -3,6 +3,8 @@
 @using LunchSplitter.Services
 @inject UserService userService
 @inject NavigationManager navigationManager
+@rendermode InteractiveServer
+
 <h3>Signup</h3>
 
 <div class="row">
@@ -28,10 +30,10 @@
             <ValidationMessage For="@(() => Model.Email)"/>
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(errorMessage))
+        @if (!string.IsNullOrWhiteSpace(_errorMessage))
         {
             <div class="alert alert-danger" role="alert">
-                @errorMessage
+                @_errorMessage
             </div>
         }
 
@@ -47,14 +49,14 @@
     [SupplyParameterFromForm]
     public SignupViewModel Model { get; set; } = new();
     
-    private string? errorMessage;
+    private string _errorMessage = string.Empty;
 
     private async Task SignupForm()
     {
         var user = userService.GetUserByUsername(Model.Username);
         if (user != null)
         {
-            errorMessage = "Username already exists";
+            _errorMessage = "Username already exists";
             return;
         }
         
