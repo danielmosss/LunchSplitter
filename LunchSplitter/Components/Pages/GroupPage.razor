@@ -19,10 +19,19 @@
     @if (IsGroupAdmin)
     {
         <div class="groupActions">
-            <button class="btn btn-primary" @onclick="() => DeleteGroup()">
+
+            <button class="btn btn-primary" @onclick="() => DeleteGroup(false)">
                 <span class="bi bi-trash"></span>
                 Delete Group
             </button>
+
+            @if (showConfirmDelete)
+            {
+                <button class="btn btn-red" @onclick="() => DeleteGroup(true)">
+                    <span class="bi bi-trash"></span>
+                    Confirm Delete Group
+                </button>
+            }
         </div>
     }
 </div>
@@ -78,7 +87,7 @@
                     <InputSelect id="userSelect" class="form-control" @bind-Value="selectedUser.UserId" @oninput="UpdateSelectedUser">
                         @foreach (var groupUser in group.GroupUsers)
                         {
-                        <option value="@groupUser.UserId">@groupUser.User.Name</option>
+                            <option value="@groupUser.UserId">@groupUser.User.Name</option>
                         }
                     </InputSelect>
                 </div>
@@ -92,7 +101,7 @@
                     <InputCheckbox id="isAdmin" class="form-check-input" @bind-Value="selectedUser.IsAdmin"/>
                     <label class="form-check-label" for="isAdmin">Is Admin</label>
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary">Update Share</button>
             </EditForm>
         </div>
@@ -145,6 +154,7 @@
 
     public Group group { get; set; }
     public bool IsGroupAdmin { get; set; }
+    public bool showConfirmDelete { get; set; } = false;
     public GroupUser selectedUser { get; set; }
 
     [SupplyParameterFromForm] public Transaction newTransaction { get; set; }
@@ -188,8 +198,14 @@
         return userTotalAmounts.FirstOrDefault(x => x.GroupUser.UserId == userId);
     }
 
-    private void DeleteGroup()
+    private void DeleteGroup(Boolean HasBeenConfirmed)
     {
+        if (!HasBeenConfirmed)
+        {
+            showConfirmDelete = !showConfirmDelete;
+            return;
+        }
+
         try
         {
             groupService.DeleteGroup(group.Id);
@@ -274,7 +290,7 @@
         selectedUser.Share = groupUser.Share;
         selectedUser.IsAdmin = groupUser.IsAdmin;
     }
-    
+
     private async Task UpdateShare()
     {
         try
