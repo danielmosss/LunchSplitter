@@ -19,10 +19,18 @@
     @if (IsGroupAdmin)
     {
         <div class="groupActions">
-            <button class="btn btn-primary" @onclick="() => DeleteGroup()">
+
+            <button class="btn btn-primary" @onclick="() => showConfirmDelete = !showConfirmDelete">
                 <span class="bi bi-trash"></span>
                 Delete Group
             </button>
+
+            @if (showConfirmDelete)
+            {
+                <button class="btn btn-danger" @onclick="() => DeleteGroup()">
+                    Confirm Delete Group
+                </button>
+            }
         </div>
     }
 </div>
@@ -78,7 +86,7 @@
                     <InputSelect id="userSelect" class="form-control" @bind-Value="selectedUser.UserId" @oninput="UpdateSelectedUser">
                         @foreach (var groupUser in group.GroupUsers)
                         {
-                        <option value="@groupUser.UserId">@groupUser.User.Name</option>
+                            <option value="@groupUser.UserId">@groupUser.User.Name</option>
                         }
                     </InputSelect>
                 </div>
@@ -92,7 +100,7 @@
                     <InputCheckbox id="isAdmin" class="form-check-input" @bind-Value="selectedUser.IsAdmin"/>
                     <label class="form-check-label" for="isAdmin">Is Admin</label>
                 </div>
-                
+
                 <button type="submit" class="btn btn-primary">Update Share</button>
             </EditForm>
         </div>
@@ -145,6 +153,7 @@
 
     public Group group { get; set; }
     public bool IsGroupAdmin { get; set; }
+    public bool showConfirmDelete { get; set; } = false;
     public GroupUser selectedUser { get; set; }
 
     [SupplyParameterFromForm] public Transaction newTransaction { get; set; }
@@ -198,14 +207,13 @@
         }
         catch (Exception ex)
         {
-            // Log the exception or handle it as needed
             Console.WriteLine($"Failed to delete group: {ex.Message}");
-            // Consider providing user feedback here as well
         }
     }
 
     private double GetSharePercentage(double share, Group group)
     {
+        if (share == 0) return 0;
         return Math.Round(share / group.GroupUsers.Sum(gu => gu.Share) * 100, 2);
     }
 
@@ -224,14 +232,7 @@
         var user = authState.User;
         return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
-
-    private string GetUsername()
-    {
-        var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
-        var user = authState.User;
-        return user.FindFirstValue(ClaimTypes.Name);
-    }
-
+    
     private async Task HandleValidSubmit()
     {
         try
@@ -274,7 +275,7 @@
         selectedUser.Share = groupUser.Share;
         selectedUser.IsAdmin = groupUser.IsAdmin;
     }
-    
+
     private async Task UpdateShare()
     {
         try

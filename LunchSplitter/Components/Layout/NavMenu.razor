@@ -6,7 +6,8 @@
 @inject AuthenticationStateProvider authenticationStateProvider
 
 <div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
+    <div class="navText">
+        <img src="logo.png" alt="LunchSplitter logo" width="50" height="50" class="d-inline-block align-top" />
         <a class="navbar-brand" href="">LunchSplitter</a>
     </div>
 </div>
@@ -23,7 +24,7 @@
                     </NavLink>
                 </div>
                 
-                @foreach (var group in userGroups)
+                @foreach (var group in groupService.GetGroupsByUserId(GetUserId()))
                 {
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="@("group/" + group.Id)">
@@ -54,26 +55,15 @@
 </AuthorizeView>
 
 @code{
-
-    private List<Group> userGroups = new List<Group>();
-
-    protected override void OnInitialized()
-    {
-        try
-        {
-            userGroups = groupService.GetGroupsByUserId(GetUserId());
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error initializing component: {ex.Message}");
-        }
-    }
-    
     private int GetUserId()
     {
         var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
         var user = authState.User;
+        if (user.Identity?.IsAuthenticated != true)
+        {
+            navigationManager.NavigateTo("/login");
+            throw new Exception("User is not authenticated");
+        }
         return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
-
 }

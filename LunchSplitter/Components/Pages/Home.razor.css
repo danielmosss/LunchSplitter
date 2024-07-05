@@ -6,6 +6,11 @@
     align-items: flex-start;
     
     .buttonGroup{
-        min-width: 200px;
+        min-width: 120px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+        flex-grow: 1;
     }
 }
