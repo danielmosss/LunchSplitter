@@ -30,7 +30,7 @@ public class UserService
         }
     }
 
-    public async void AddUser(SignupViewModel newUser)
+    public async Task<User> AddUser(SignupViewModel newUser)
     {
         var hash = HashPassword(newUser.Password);
         var user = new User
@@ -46,6 +46,8 @@ public class UserService
             context.Users.Add(user);
             await context.SaveChangesAsync();
         }
+        
+        return user;
     }
 
     
