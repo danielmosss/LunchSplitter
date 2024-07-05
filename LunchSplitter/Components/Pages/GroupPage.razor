@@ -207,14 +207,13 @@
         }
         catch (Exception ex)
         {
-            // Log the exception or handle it as needed
             Console.WriteLine($"Failed to delete group: {ex.Message}");
-            // Consider providing user feedback here as well
         }
     }
 
     private double GetSharePercentage(double share, Group group)
     {
+        if (share == 0) return 0;
         return Math.Round(share / group.GroupUsers.Sum(gu => gu.Share) * 100, 2);
     }
 

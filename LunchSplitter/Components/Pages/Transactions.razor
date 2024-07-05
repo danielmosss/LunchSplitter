@@ -108,7 +108,8 @@ else
 
     private decimal calculatePercentage(decimal total, decimal shared)
     {
-        return Math.Round((shared / total) * 100, 2);
+        var result = Math.Round((shared / total) * 100, 2);
+        return result;
     }
 
     private string GetDutchDate(DateTime date)
