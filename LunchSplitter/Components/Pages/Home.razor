@@ -59,6 +59,11 @@
     {
         var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
         var user = authState.User;
+        if (user.Identity?.IsAuthenticated != true)
+        {
+            navigationManager.NavigateTo("/login");
+            throw new Exception("User is not authenticated");
+        }
         return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
 

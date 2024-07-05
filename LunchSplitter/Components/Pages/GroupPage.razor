@@ -233,14 +233,7 @@
         var user = authState.User;
         return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
-
-    private string GetUsername()
-    {
-        var authState = authenticationStateProvider.GetAuthenticationStateAsync().Result;
-        var user = authState.User;
-        return user.FindFirstValue(ClaimTypes.Name);
-    }
-
+    
     private async Task HandleValidSubmit()
     {
         try
