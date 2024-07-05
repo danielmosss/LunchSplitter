@@ -11,7 +11,10 @@
 
 <div>
     <h2>Welcome to LunchSplitter</h2>
-    <p>Split your lunch bill with your friends</p>
+    <p>
+        Split your lunch bill with your friends!<br/>
+        Create a group or use an <strong>invitelink</strong> to join a group.
+    </p>
 </div>
 
 <AuthorizeView>
@@ -20,20 +23,21 @@
             @foreach (var group in groupService.GetGroupsByUserId(GetUserId()))
             {
                 <button class="btn btn-primary buttonGroup" @onclick="() => NavigateToGroup(group.Id)">
-                    Go to @group.Name
+                    @group.Name
+                    <i class="bi bi-box-arrow-up-right"></i>
                 </button>
             }
             <div class="group">
                 <EditForm Model="NewGroup" OnValidSubmit="HandleSubmit" FormName="CreateGroup" Context="another_name">
                     <DataAnnotationsValidator/>
 
-                    <div>
+                    <div class="form-group">
                         <label for="NameInput">Name</label>
-                        <InputText id="NameInput" @bind-Value="NewGroup.Name"/>
+                        <InputText id="NameInput" class="form-control" @bind-Value="NewGroup.Name"/>
                         <ValidationMessage For="@(() => NewGroup.Name)"/>
                     </div>
 
-                    <button type="submit">Submit</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
                 </EditForm>
             </div>
         </div>
@@ -41,7 +45,7 @@
     <NotAuthorized>
         <div>
             <NavLink href="login" class="btn btn-primary">Login</NavLink>
-            <NavLink href="/signup" class="btn btn-primary">Signup</NavLink>
+            <NavLink href="signup" class="btn btn-primary">Signup</NavLink>
         </div>
     </NotAuthorized>
 </AuthorizeView>
@@ -49,7 +53,7 @@
 @code
 {
     [SupplyParameterFromForm] public Group NewGroup { get; set; }
-    
+
     protected override void OnInitialized()
     {
         NewGroup ??= new();
@@ -64,6 +68,7 @@
             navigationManager.NavigateTo("/login");
             throw new Exception("User is not authenticated");
         }
+
         return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
 
