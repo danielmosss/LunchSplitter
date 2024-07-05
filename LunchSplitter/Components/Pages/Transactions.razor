@@ -71,7 +71,11 @@ else
                         </table>
                         @if (IsGroupAdmin)
                         {
-                            <button class="btn btn-danger" @onclick="@(() => DeleteTransaction(tx.Id))">Delete</button>
+                            <button class="btn btn-primary" @onclick="@(() => showConfirmDelete = !showConfirmDelete)">Delete Transaction</button>
+                            @if (showConfirmDelete)
+                            {
+                                <button class="btn btn-danger" @onclick="@(() => DeleteTransaction(tx.Id))">Confirm Delete</button>
+                            }
                         }
                     </div>
                 </div>
@@ -86,7 +90,7 @@ else
     [Parameter] public bool IsGroupAdmin { get; set; }
 
     private List<Transaction>? transactions;
-    private bool isPopupVisible = false;
+    public bool showConfirmDelete { get; set; } = false;
     private int TxCount = 25;
 
     protected override async Task OnInitializedAsync()
