@@ -15,5 +15,6 @@
             await HttpContext.SignOutAsync();
         }
         navigationManager.NavigateTo("/login", true);
+        StateHasChanged();
     }
 }

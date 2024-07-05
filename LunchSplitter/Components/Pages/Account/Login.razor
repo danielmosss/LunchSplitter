@@ -68,6 +68,7 @@
         var principal = new ClaimsPrincipal(identity);
         await HttpContext.SignInAsync(principal);
         
-        NavigationManager.NavigateTo("/login", true);
+        NavigationManager.NavigateTo("/", true);
+        StateHasChanged();
     }
 }
