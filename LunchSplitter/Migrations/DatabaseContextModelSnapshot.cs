@@ -81,8 +81,8 @@ namespace LunchSplitter.Migrations
                         .HasColumnType("bit")
                         .HasColumnName("is_admin");
 
-                    b.Property<int>("Share")
-                        .HasColumnType("int")
+                    b.Property<double>("Share")
+                        .HasColumnType("float")
                         .HasColumnName("share");
 
                     b.Property<int>("UserId")
@@ -198,16 +198,6 @@ namespace LunchSplitter.Migrations
                         .IsUnique();
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Email = "admin@example.com",
-                            Name = "SystemAdmin",
-                            Password = "sFqG//VmTc+cIST3kB0Ef6BUxrme3dJTT8USsbhDPfQ=",
-                            Salt = "AHHl4FDNFVZHRQTt5NXxAA=="
-                        });
                 });
 
             modelBuilder.Entity("a.GroupUserPermissions", b =>
