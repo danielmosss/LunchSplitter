@@ -250,7 +250,7 @@
                 var totalShares = group.GroupUsers.Sum(x => x.Share);
                 foreach (var groupUser in group.GroupUsers)
                 {
-                    var Amount = newTransaction.Amount * groupUser.Share / totalShares;
+                    var Amount = newTransaction.Amount * (decimal)groupUser.Share / (decimal)totalShares;
                     customShares[groupUser.UserId] = Amount;
                 }
             }

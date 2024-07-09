@@ -25,9 +25,9 @@ public class GroupUser
     public bool IsAdmin { get; set; }
     
     [Required]
-    [Range(0, int.MaxValue, ErrorMessage = "must be zero or greater")]
+    [Range(0, double.MaxValue, ErrorMessage = "must be zero or greater")]
     [Column("share")]
-    public int Share { get; set; }
+    public double Share { get; set; }
     
     [ForeignKey("GroupId")]
     public Group Group { get; set; }
