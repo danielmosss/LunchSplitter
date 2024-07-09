@@ -45,6 +45,10 @@
                 <th>Total Paid</th>
                 <th>Total Spent</th>
                 <th>Balance</th>
+                @if (IsGroupAdmin)
+                {
+                    <th>Actions</th>
+                }
             </tr>
             @foreach (var groupUser in group.GroupUsers)
             {
@@ -70,6 +74,14 @@
                     <td>@user.TotalPaid (@user.TransactionsPaid TX)</td>
                     <td>@user.TotalSpent (@user.TransactionsSpent TX)</td>
                     <td>@(@user.TotalPaid - @user.TotalSpent)</td>
+                    @if (IsGroupAdmin && !groupUser.IsAdmin && group.GroupUsers.Count > 1 && (@user.TotalPaid - @user.TotalSpent) == 0)
+                    {
+                        <td>
+                            <button @onclick="() => groupService.DeleteGroupUser(groupUser)" class="btn btn-danger">
+                                delete user
+                            </button>
+                        </td>
+                    }
                 </tr>
             }
         </table>
@@ -232,7 +244,7 @@
         var user = authState.User;
         return int.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier));
     }
-    
+
     private async Task HandleValidSubmit()
     {
         try
@@ -250,7 +262,7 @@
                 var totalShares = group.GroupUsers.Sum(x => x.Share);
                 foreach (var groupUser in group.GroupUsers)
                 {
-                    var Amount = newTransaction.Amount * (decimal)groupUser.Share / (decimal)totalShares;
+                    var Amount = newTransaction.Amount * groupUser.Share / totalShares;
                     customShares[groupUser.UserId] = Amount;
                 }
             }

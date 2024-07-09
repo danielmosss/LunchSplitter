@@ -22,7 +22,7 @@ public class GroupService
         var groups = context.Groups.Include(g => g.GroupUsers).ThenInclude(gu => gu.User).ToList();
         return groups;
     }
-    
+
     public List<Group> GetGroupsByUserId(int userId)
     {
         using var context = _dbContextFactory.CreateDbContext();
@@ -65,7 +65,7 @@ public class GroupService
             AddUserToGroup(group, userId, true);
         }
     }
-    
+
     public async Task<Boolean> AddUserToGroup(Group group, int userId, bool isAdmin = false)
     {
         using (var context = _dbContextFactory.CreateDbContext())
@@ -76,7 +76,7 @@ public class GroupService
             {
                 dbGroup.GroupUsers = new List<GroupUser>();
             }
-            
+
             if (UserAlreadyInGroup(dbGroup.Id, userId))
             {
                 Console.WriteLine("User already in group");
@@ -93,18 +93,19 @@ public class GroupService
             {
                 groupUser.IsAdmin = true;
             }
+
             dbGroup.GroupUsers.Add(groupUser);
             await context.SaveChangesAsync();
             return true;
         }
     }
-    
+
     private bool UserAlreadyInGroup(int groupId, int userId)
     {
         Group group = GetGroupById(groupId);
         return group.GroupUsers.Any(gu => gu.UserId == userId);
     }
-    
+
     public class UserTotalAmount
     {
         public GroupUser GroupUser { get; set; }
@@ -156,7 +157,7 @@ public class GroupService
             context.SaveChanges();
         }
     }
-    
+
     public List<GroupInvite> GetInvites(int groupId)
     {
         using (var context = _dbContextFactory.CreateDbContext())
@@ -174,7 +175,7 @@ public class GroupService
             return context.GroupInvites.Find(inviteId);
         }
     }
-    
+
     public async void UseInvite(Guid inviteId, int userId)
     {
         using (var context = _dbContextFactory.CreateDbContext())
@@ -184,12 +185,12 @@ public class GroupService
             {
                 return;
             }
-            
+
             if (invite.usage < 2)
             {
                 context.GroupInvites.Remove(invite);
             }
-            
+
             var group = context.Groups.Find(invite.GroupId);
             var result = await AddUserToGroup(group, userId);
             if (result)
@@ -199,12 +200,21 @@ public class GroupService
             }
         }
     }
-    
+
     public void UpdateGroupUser(GroupUser groupUser)
     {
         using (var context = _dbContextFactory.CreateDbContext())
         {
             context.GroupUsers.Update(groupUser);
+            context.SaveChanges();
+        }
+    }
+
+    public void DeleteGroupUser(GroupUser groupUser)
+    {
+        using (var context = _dbContextFactory.CreateDbContext())
+        {
+            context.GroupUsers.Remove(groupUser);
             context.SaveChanges();
         }
     }
